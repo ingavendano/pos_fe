@@ -1,0 +1,332 @@
+<div class="p-6">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold text-gray-800">Módulo de Inventario</h1>
+        <div class="flex gap-2">
+            <button (click)="openNewWarehouse()"
+                class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+                Nueva Bodega
+            </button>
+        </div>
+    </div>
+
+    <!-- Tabs Nav -->
+    <div class="flex border-b mb-6 overflow-x-auto">
+        <button (click)="activeTab.set('stock')"
+            [class]="'px-6 py-3 font-medium transition ' + (activeTab() === 'stock' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500 hover:text-gray-700')">
+            Stock
+        </button>
+        <button (click)="activeTab.set('bodegas')"
+            [class]="'px-6 py-3 font-medium transition ' + (activeTab() === 'bodegas' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500 hover:text-gray-700')">
+            Bodegas
+        </button>
+        <button (click)="activeTab.set('movimientos')"
+            [class]="'px-6 py-3 font-medium transition ' + (activeTab() === 'movimientos' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500 hover:text-gray-700')">
+            Movimientos
+        </button>
+        <button (click)="activeTab.set('alertas')"
+            [class]="'px-6 py-3 font-medium transition flex items-center gap-2 ' + (activeTab() === 'alertas' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500 hover:text-gray-700')">
+            Alertas
+            <span *ngIf="alerts().length > 0"
+                class="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">{{alerts().length}}</span>
+        </button>
+    </div>
+
+    <!-- Main Content -->
+    <div class="bg-white rounded-xl shadow-sm overflow-hidden min-h-[400px]">
+
+        <!-- 1. STOCK TAB -->
+        <div *ngIf="activeTab() === 'stock'" class="p-4">
+            <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+                <div class="flex items-center gap-4">
+                    <label class="font-medium text-gray-700">Bodega Seleccionada:</label>
+                    <select [ngModel]="selectedWarehouseId()" (ngModelChange)="selectWarehouse($event)"
+                        class="border rounded-lg px-4 py-2 border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none bg-white shadow-sm">
+                        <option *ngFor="let w of warehouses()" [value]="w.id">{{w.name}}</option>
+                    </select>
+                </div>
+
+                <button (click)="openAddProduct()"
+                    class="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition flex items-center gap-2 shadow-sm text-sm font-medium">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Cargar Producto (Stock Inicial)
+                </button>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead class="bg-gray-50 text-gray-600 uppercase text-xs font-semibold">
+                        <tr>
+                            <th class="px-6 py-3">Producto</th>
+                            <th class="px-6 py-3">Cantidad Actual</th>
+                            <th class="px-6 py-3">Mínimo Requerido</th>
+                            <th class="px-6 py-3">Estado</th>
+                            <th class="px-6 py-3">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y text-sm">
+                        <tr *ngFor="let item of inventory()" class="hover:bg-gray-50 transition">
+                            <td class="px-6 py-4 font-medium">{{item.product?.name}}</td>
+                            <td class="px-6 py-4">{{item.quantity}}</td>
+                            <td class="px-6 py-4 text-gray-500">{{item.product?.minStock}}</td>
+                            <td class="px-6 py-4">
+                                <span class="px-2 py-1 rounded-full text-xs"
+                                    [ngClass]="isLowStock(item) ? 'bg-red-100 text-red-700 font-bold' : 'bg-green-100 text-green-700'">
+                                    {{ isLowStock(item) ? 'BAJO STOCK' : 'OK' }} </span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <button (click)="openAdjustment(item)"
+                                    class="text-blue-600 hover:text-blue-800 flex items-center gap-1">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                                        </path>
+                                    </svg>
+                                    Ajustar
+                                </button>
+                            </td>
+                        </tr>
+                        <tr *ngIf="inventory().length === 0">
+                            <td colspan="5" class="px-6 py-8 text-center text-gray-500 italic">No hay productos
+                                registrados en esta bodega.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 2. BODEGAS TAB -->
+        <div *ngIf="activeTab() === 'bodegas'" class="p-4">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead class="bg-gray-50 text-gray-600 uppercase text-xs font-semibold">
+                        <tr>
+                            <th class="px-6 py-3">Nombre</th>
+                            <th class="px-6 py-3">Descripción</th>
+                            <th class="px-6 py-3">Sucursal</th>
+                            <th class="px-6 py-3">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y text-sm">
+                        <tr *ngFor="let w of warehouses()" class="hover:bg-gray-50 transition">
+                            <td class="px-6 py-4 font-medium flex items-center gap-2">
+                                {{w.name}}
+                                <span *ngIf="w.default"
+                                    class="bg-blue-100 text-blue-700 text-[10px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider">Default</span>
+                            </td>
+                            <td class="px-6 py-4 text-gray-500">{{w.description || '-'}}</td>
+                            <td class="px-6 py-4">{{w.branch?.name}}</td>
+                            <td class="px-6 py-4 flex gap-3">
+                                <button (click)="openEditWarehouse(w)" class="text-blue-600 hover:text-blue-800">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                                        </path>
+                                    </svg>
+                                </button>
+                                <button (click)="deleteWarehouse(w.id!)" class="text-red-600 hover:text-red-800">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-4v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                        </path>
+                                    </svg>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 3. MOVIMIENTOS TAB -->
+        <div *ngIf="activeTab() === 'movimientos'" class="p-4">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead class="bg-gray-50 text-gray-600 uppercase text-xs font-semibold">
+                        <tr>
+                            <th class="px-6 py-3">Fecha</th>
+                            <th class="px-6 py-3">Tipo</th>
+                            <th class="px-6 py-3">Producto</th>
+                            <th class="px-6 py-3">Cantidad</th>
+                            <th class="px-6 py-3">Motivo</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y text-sm">
+                        <tr *ngFor="let m of movements()" class="hover:bg-gray-50 transition text-xs">
+                            <td class="px-6 py-4 whitespace-nowrap">{{ m.createdAt | date: 'short' }}</td>
+                            <td class="px-6 py-4">
+                                <span
+                                    [class]="'px-2 py-0.5 rounded-full ' + (m.movementType === 'IN' ? 'bg-green-100 text-green-700' : m.movementType === 'OUT' ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-700')">
+                                    {{m.movementType}}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 font-medium">{{m.inventory.product?.name}}</td>
+                            <td class="px-6 py-4 font-bold">{{m.quantity}}</td>
+                            <td class="px-6 py-4 text-gray-500">{{m.reason}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 4. ALERTAS TAB -->
+        <div *ngIf="activeTab() === 'alertas'" class="p-4">
+            <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-4" *ngIf="alerts().length > 0">
+                <p class="text-red-700 font-medium">Hay {{alerts().length}} productos con stock por debajo del mínimo
+                    configurado.</p>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead class="bg-gray-50 text-gray-600 uppercase text-xs font-semibold">
+                        <tr>
+                            <th class="px-6 py-3">Bodega</th>
+                            <th class="px-6 py-3">Producto</th>
+                            <th class="px-6 py-3">Stock Actual</th>
+                            <th class="px-6 py-3">Stock Mínimo</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y text-sm">
+                        <tr *ngFor="let item of alerts()" class="bg-red-50 hover:bg-red-100 transition">
+                            <td class="px-6 py-4 font-medium">{{item.warehouse?.name}}</td>
+                            <td class="px-6 py-4">{{item.product?.name}}</td>
+                            <td class="px-6 py-4 font-bold text-red-600">{{item.quantity}}</td>
+                            <td class="px-6 py-4 text-gray-500">{{item.product?.minStock}}</td>
+                        </tr>
+                        <tr *ngIf="alerts().length === 0">
+                            <td colspan="4" class="px-6 py-8 text-center text-green-600 italic font-medium">No hay
+                                alertas activas de stock. Todo en orden.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Modal Warehouse Form -->
+<div *ngIf="showWarehouseForm()"
+    class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-md p-6">
+        <h2 class="text-xl font-bold mb-4">{{editingWarehouse() ? 'Editar Bodega' : 'Nueva Bodega'}}</h2>
+        <form [formGroup]="warehouseForm" (ngSubmit)="saveWarehouse()" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium mb-1">Nombre</label>
+                <input type="text" formControlName="name"
+                    class="w-full border rounded-lg px-4 py-2 border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">Descripción</label>
+                <textarea formControlName="description"
+                    class="w-full border rounded-lg px-4 py-2 border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"></textarea>
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">Sucursal</label>
+                <select formControlName="branchId"
+                    class="w-full border rounded-lg px-4 py-2 border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                    <option *ngFor="let b of branches()" [value]="b.id">{{b.name}}</option>
+                </select>
+            </div>
+            <div class="flex items-center gap-2 py-2">
+                <input type="checkbox" formControlName="isDefault" id="isDefault"
+                    class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                <label for="isDefault" class="text-sm font-medium text-gray-700">Usar como bodega predeterminada para
+                    ventas</label>
+            </div>
+            <div class="flex justify-end gap-3 pt-4">
+                <button type="button" (click)="showWarehouseForm.set(false)"
+                    class="px-4 py-2 border rounded-lg hover:bg-gray-50 text-gray-700">Cancelar</button>
+                <button type="submit" [disabled]="warehouseForm.invalid"
+                    class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50">Guardar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal Adjustment Form -->
+<div *ngIf="showAdjustmentForm()"
+    class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-md p-6">
+        <div class="mb-4">
+            <h2 class="text-xl font-bold">Ajuste de Stock</h2>
+            <p class="text-sm text-gray-500">{{selectedInventoryItem()?.product?.name}} en
+                {{selectedInventoryItem()?.warehouse?.name}}</p>
+        </div>
+        <form [formGroup]="adjustmentForm" (ngSubmit)="saveAdjustment()" class="space-y-4">
+            <div class="grid grid-cols-3 gap-2 p-1 bg-gray-100 rounded-lg">
+                <button type="button" (click)="adjustmentForm.patchValue({type: 'IN'})"
+                    [class]="'py-2 rounded-md font-medium text-xs transition ' + (adjustmentForm.get('type')?.value === 'IN' ? 'bg-white shadow text-green-600' : 'text-gray-500')">
+                    ENTRADA
+                </button>
+                <button type="button" (click)="adjustmentForm.patchValue({type: 'OUT'})"
+                    [class]="'py-2 rounded-md font-medium text-xs transition ' + (adjustmentForm.get('type')?.value === 'OUT' ? 'bg-white shadow text-red-600' : 'text-gray-500')">
+                    SALIDA
+                </button>
+                <button type="button" (click)="adjustmentForm.patchValue({type: 'ADJUSTMENT'})"
+                    [class]="'py-2 rounded-md font-medium text-xs transition ' + (adjustmentForm.get('type')?.value === 'ADJUSTMENT' ? 'bg-white shadow text-blue-600' : 'text-gray-500')">
+                    AJUSTE
+                </button>
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">Cantidad</label>
+                <input type="number" formControlName="quantity"
+                    class="w-full border rounded-lg px-4 py-2 border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">Motivo / Notas</label>
+                <input type="text" formControlName="reason"
+                    class="w-full border rounded-lg px-4 py-2 border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                    placeholder="Ej: Compra a proveedor, Merma, etc.">
+            </div>
+            <div class="flex justify-end gap-3 pt-4">
+                <button type="button" (click)="showAdjustmentForm.set(false)"
+                    class="px-4 py-2 border rounded-lg hover:bg-gray-50 text-gray-700">Cancelar</button>
+                <button type="submit" [disabled]="adjustmentForm.invalid"
+                    class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50">Confirmar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal Load New Product Form -->
+<div *ngIf="showAddProductForm()"
+    class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-md p-6">
+        <div class="mb-4">
+            <h2 class="text-xl font-bold">Cargar Nuevo Producto a Bodega</h2>
+            <p class="text-sm text-gray-500">Selecciona un producto del catálogo para inicializar su stock.</p>
+        </div>
+        <form [formGroup]="addProductForm" (ngSubmit)="saveInitialStock()" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium mb-1">Producto</label>
+                <select formControlName="productId"
+                    class="w-full border rounded-lg px-4 py-2 border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                    <option [value]="null" disabled>Seleccionar producto...</option>
+                    <option *ngFor="let p of products()" [value]="p.id">{{p.name}}</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">Cantidad Inicial</label>
+                <input type="number" formControlName="quantity"
+                    class="w-full border rounded-lg px-4 py-2 border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">Referencia / Motivo</label>
+                <input type="text" formControlName="reason"
+                    class="w-full border rounded-lg px-4 py-2 border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+            </div>
+            <div class="flex justify-end gap-3 pt-4">
+                <button type="button" (click)="showAddProductForm.set(false)"
+                    class="px-4 py-2 border rounded-lg hover:bg-gray-50 text-gray-700">Cancelar</button>
+                <button type="submit" [disabled]="addProductForm.invalid"
+                    class="bg-emerald-600 text-white px-6 py-2 rounded-lg hover:bg-emerald-700 disabled:opacity-50">Cargar
+                    Stock</button>
+            </div>
+        </form>
+    </div>
+</div>

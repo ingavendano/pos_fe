@@ -1,0 +1,278 @@
+
+> restaurant@1.1.0 build
+> ng build
+
+[33m>[39m Building...
+[32m√[39m Building...
+Application bundle generation failed. [21.924 seconds] - 2026-03-10T23:52:54.892Z
+
+X [ERROR] TS2345: Argument of type 'number | undefined' is not assignable to parameter of type 'number'.
+  Type 'undefined' is not assignable to type 'number'. [plugin angular-compiler]
+
+    src/app/core/services/cart.service.ts:53:53:
+      53 │ ...            this.tableService.getActiveOrder(table.id).subscribe({
+         ╵                                                 ~~~~~~~~
+
+
+X [ERROR] TS18048: 'tax.percentage' is possibly 'undefined'. [plugin angular-compiler]
+
+    src/app/core/services/cart.service.ts:95:56:
+      95 │ ...const calculatedAmount = (currentSubtotal * tax.percentage) / 100;
+         ╵                                                ~~~~~~~~~~~~~~
+
+
+X [ERROR] TS18048: 'item.product.price' is possibly 'undefined'. [plugin angular-compiler]
+
+    src/app/core/services/cart.service.ts:139:39:
+      139 │                     subtotal: newQty * item.product.price
+          ╵                                        ~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS18048: 'item.product.price' is possibly 'undefined'. [plugin angular-compiler]
+
+    src/app/core/services/cart.service.ts:174:43:
+      174 │                 subtotal: cappedQuantity * item.product.price
+          ╵                                            ~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2345: Argument of type 'number | undefined' is not assignable to parameter of type 'number'.
+  Type 'undefined' is not assignable to type 'number'. [plugin angular-compiler]
+
+    src/app/core/services/catalogue.service.ts:27:49:
+      27 │         this.categories().forEach(cat => map.set(cat.id, []));
+         ╵                                                  ~~~~~~
+
+
+X [ERROR] TS2551: Property 'categoryId' does not exist on type 'Product'. Did you mean 'category'? [plugin angular-compiler]
+
+    src/app/core/services/catalogue.service.ts:30:42:
+      30 │             const items = map.get(product.categoryId) || [];
+         ╵                                           ~~~~~~~~~~
+
+  'category' is declared here.
+
+    src/app/core/api/model/product.ts:22:4:
+      22 │     category?: Category;
+         ╵     ~~~~~~~~
+
+
+X [ERROR] TS2551: Property 'categoryId' does not exist on type 'Product'. Did you mean 'category'? [plugin angular-compiler]
+
+    src/app/core/services/catalogue.service.ts:32:28:
+      32 │             map.set(product.categoryId, items);
+         ╵                             ~~~~~~~~~~
+
+  'category' is declared here.
+
+    src/app/core/api/model/product.ts:22:4:
+      22 │     category?: Category;
+         ╵     ~~~~~~~~
+
+
+X [ERROR] TS2345: Argument of type 'number | undefined' is not assignable to parameter of type 'number'.
+  Type 'undefined' is not assignable to type 'number'. [plugin angular-compiler]
+
+    src/app/features/admin/branches-page/branches-page.component.html:94:55:
+      94 │                           (click)="deleteBranch(branch.id)"
+         ╵                                                        ~~
+
+  Error occurs in the template of component BranchesPageComponent.
+
+    src/app/features/admin/branches-page/branches-page.component.ts:11:17:
+      11 │     templateUrl: './branches-page.component.html'
+         ╵                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2532: Object is possibly 'undefined'. [plugin angular-compiler]
+
+    src/app/features/admin/inventory-page/inventory-page.component.html:79:47:
+      79 │ ...ngClass]="item.quantity <= (item.product?.minStock || 0) ? 'bg-...
+         ╵              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component InventoryPageComponent.
+
+    src/app/features/admin/inventory-page/inventory-page.component.ts:17:17:
+      17 │     templateUrl: './inventory-page.component.html',
+         ╵                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2532: Object is possibly 'undefined'. [plugin angular-compiler]
+
+    src/app/features/admin/inventory-page/inventory-page.component.html:80:38:
+      80 │ ...        {{item.quantity <= (item.product?.minStock || 0) ? 'BAJ...
+         ╵              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component InventoryPageComponent.
+
+    src/app/features/admin/inventory-page/inventory-page.component.ts:17:17:
+      17 │     templateUrl: './inventory-page.component.html',
+         ╵                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2532: Object is possibly 'undefined'. [plugin angular-compiler]
+
+    src/app/features/admin/inventory-page/inventory-page.component.html:168:84:
+      168 │ ...d class="px-6 py-4 font-medium">{{m.inventory.product.name}}</td>
+          ╵                                                          ~~~~
+
+  Error occurs in the template of component InventoryPageComponent.
+
+    src/app/features/admin/inventory-page/inventory-page.component.ts:17:17:
+      17 │     templateUrl: './inventory-page.component.html',
+         ╵                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2345: Argument of type 'number | undefined' is not assignable to parameter of type 'number | null'.
+  Type 'undefined' is not assignable to type 'number | null'. [plugin angular-compiler]
+
+    src/app/features/admin/tables-page/tables-page.component.ts:52:36:
+      52 │             this.filterBranchId.set(branches[0].id);
+         ╵                                     ~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2322: Type 'string | undefined' is not assignable to type 'string'.
+  Type 'undefined' is not assignable to type 'string'. [plugin angular-compiler]
+
+    src/app/features/admin/tables-page/tables-page.component.ts:75:24:
+      75 │         return branch ? branch.name : 'Desconocida';
+         ╵                         ~~~~~~~~~~~
+
+
+X [ERROR] TS2345: Argument of type 'number | undefined' is not assignable to parameter of type 'number'.
+  Type 'undefined' is not assignable to type 'number'. [plugin angular-compiler]
+
+    src/app/features/admin/taxes-page/taxes-page.component.html:91:49:
+      91 │                           (click)="deleteTax(tax.id)"
+         ╵                                                  ~~
+
+  Error occurs in the template of component TaxesPageComponent.
+
+    src/app/features/admin/taxes-page/taxes-page.component.ts:11:17:
+      11 │     templateUrl: './taxes-page.component.html'
+         ╵                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'role' does not exist on type 'UserResponseDto'. [plugin angular-compiler]
+
+    src/app/features/admin/users-page/users-page.component.html:96:62:
+      96 │                             [ngClass]="getRoleBadgeColor(user.role)">
+         ╵                                                               ~~~~
+
+  Error occurs in the template of component UsersPageComponent.
+
+    src/app/features/admin/users-page/users-page.component.ts:12:17:
+      12 │     templateUrl: './users-page.component.html'
+         ╵                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'role' does not exist on type 'UserResponseDto'. [plugin angular-compiler]
+
+    src/app/features/admin/users-page/users-page.component.html:97:46:
+      97 │                           {{ getRoleName(user.role) }}
+         ╵                                               ~~~~
+
+  Error occurs in the template of component UsersPageComponent.
+
+    src/app/features/admin/users-page/users-page.component.ts:12:17:
+      12 │     templateUrl: './users-page.component.html'
+         ╵                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2345: Argument of type 'number | undefined' is not assignable to parameter of type 'number'.
+  Type 'undefined' is not assignable to type 'number'. [plugin angular-compiler]
+
+    src/app/features/admin/users-page/users-page.component.html:120:58:
+      120 │                              (click)="deactivateUser(user.id)"
+          ╵                                                           ~~
+
+  Error occurs in the template of component UsersPageComponent.
+
+    src/app/features/admin/users-page/users-page.component.ts:12:17:
+      12 │     templateUrl: './users-page.component.html'
+         ╵                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2322: Type 'string | undefined' is not assignable to type 'string'.
+  Type 'undefined' is not assignable to type 'string'. [plugin angular-compiler]
+
+    src/app/features/admin/users-page/users-page.component.ts:59:24:
+      59 │         return branch ? branch.name : 'Desconocida';
+         ╵                         ~~~~~~~~~~~
+
+
+X [ERROR] TS2345: Argument of type 'number | undefined' is not assignable to parameter of type 'number'.
+  Type 'undefined' is not assignable to type 'number'. [plugin angular-compiler]
+
+    src/app/features/catalog/categories-page/categories-page.component.html:90:59:
+      90 │                           (click)="deleteCategory(category.id)"
+         ╵                                                            ~~
+
+  Error occurs in the template of component CategoriesPageComponent.
+
+    src/app/features/catalog/categories-page/categories-page.component.ts:11:17:
+      11 │     templateUrl: './categories-page.component.html'
+         ╵                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2551: Property 'categoryId' does not exist on type 'Product'. Did you mean 'category'? [plugin angular-compiler]
+
+    src/app/features/catalog/products-page/products-page.component.html:99:49:
+      99 │                       {{ getCategoryName(product.categoryId) }}
+         ╵                                                  ~~~~~~~~~~
+
+  Error occurs in the template of component ProductsPageComponent.
+
+    src/app/features/catalog/products-page/products-page.component.ts:11:15:
+      11 │   templateUrl: './products-page.component.html'
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2345: Argument of type 'number | undefined' is not assignable to parameter of type 'number'.
+  Type 'undefined' is not assignable to type 'number'. [plugin angular-compiler]
+
+    src/app/features/catalog/products-page/products-page.component.html:121:57:
+      121 │                           (click)="deleteProduct(product.id)"
+          ╵                                                          ~~
+
+  Error occurs in the template of component ProductsPageComponent.
+
+    src/app/features/catalog/products-page/products-page.component.ts:11:15:
+      11 │   templateUrl: './products-page.component.html'
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2322: Type 'string | undefined' is not assignable to type 'string'.
+  Type 'undefined' is not assignable to type 'string'. [plugin angular-compiler]
+
+    src/app/features/catalog/products-page/products-page.component.ts:64:17:
+      64 │     return cat ? cat.name : 'Unknown';
+         ╵                  ~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'customerName' does not exist on type 'InvoiceDto'. [plugin angular-compiler]
+
+    src/app/features/invoices/invoice-detail-modal/invoice-detail-modal.component.html:27:35:
+      27 │ ...    [customer]="order.invoice?.customerName"></app-invoice-ticket>
+         ╵                                   ~~~~~~~~~~~~
+
+  Error occurs in the template of component InvoiceDetailModalComponent.
+
+    src/app/features/invoices/invoice-detail-modal/invoice-detail-modal.component.ts:13:15:
+      13 │   templateUrl: './invoice-detail-modal.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2345: Argument of type 'number | undefined' is not assignable to parameter of type 'number | null'.
+  Type 'undefined' is not assignable to type 'number | null'. [plugin angular-compiler]
+
+    src/app/features/pos/category-filter/category-filter.component.html:24:45:
+      24 │             (click)="selectCategory(category.id)"
+         ╵                                              ~~
+
+  Error occurs in the template of component CategoryFilterComponent.
+
+    src/app/features/pos/category-filter/category-filter.component.ts:7:15:
+      7 │   templateUrl: './category-filter.component.html',
+        ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+

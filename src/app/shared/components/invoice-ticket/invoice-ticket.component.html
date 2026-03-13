@@ -1,0 +1,157 @@
+<div class="ticket-container shadow-sm border border-gray-100 rounded-lg max-w-[350px]">
+    <!-- Header: Legal Company details -->
+    <div class="text-center mb-4">
+        <h1 class="bold uppercase text-base m-0 leading-tight">{{ tenantService.settings()?.name || 'Mi Restaurante' }}
+        </h1>
+        <div class="text-[11px] mt-1 space-y-0.5">
+            @if (tenantService.settings()?.nit) {
+            <p class="m-0 uppercase">NIT: {{ tenantService.settings()?.nit }}</p>
+            }
+            @if (tenantService.settings()?.nrc) {
+            <p class="m-0 uppercase">NRC: {{ tenantService.settings()?.nrc }}</p>
+            }
+            @if (tenantService.settings()?.giro) {
+            <p class="m-0 truncate px-2">Giro: {{ tenantService.settings()?.giro }}</p>
+            }
+            @if (branchDetails()) {
+            <p class="m-0 italic">{{ branchDetails()?.name }}</p>
+            <p class="m-0 text-[10px] leading-tight px-4">{{ branchDetails()?.address }}</p>
+            }
+        </div>
+    </div>
+
+    <div class="divider border-black border-t-2"></div>
+    <div class="text-center bold text-xs py-1 uppercase tracking-wider">
+        {{ isPreCount ? 'PRE-CUENTA DE CONTROL' : 'FACTURA DE CONSUMIDOR FINAL (DTE)' }}
+    </div>
+    <div class="divider border-black border-t-2"></div>
+
+    <!-- DTE Identification Section (Only if paid) -->
+    @if (!isPreCount && order?.invoice?.generationCode) {
+    <div class="text-[10px] mb-4 space-y-0.5 px-1 font-mono">
+        <div class="flex">
+            <span class="bold w-32 shrink-0">Cod. Generación:</span>
+            <span class="break-all">{{ order?.invoice?.generationCode }}</span>
+        </div>
+        <div class="flex">
+            <span class="bold w-32 shrink-0">Num. Control:</span>
+            <span>{{ order?.invoice?.controlNumber }}</span>
+        </div>
+        <div class="flex">
+            <span class="bold w-32 shrink-0">Sello Recepción:</span>
+            <span class="break-all">{{ order?.invoice?.receptionSello }}</span>
+        </div>
+        <div class="flex">
+            <span class="bold w-32 shrink-0">Fecha/Hora:</span>
+            <span>{{ (order?.invoice?.issuedAt || order?.createdAt || currentDate) | date:'dd/MM/yyyy HH:mm:ss'
+                }}</span>
+        </div>
+    </div>
+    <div class="divider border-dotted"></div>
+    }
+
+    <!-- Transaction info -->
+    <div class="mb-3 text-[11px] px-1">
+        <div class="flex-between">
+            <span class="bold">ORDEN #:</span>
+            <span>{{ order?.id || 'NUEVA' }}</span>
+        </div>
+        @if (order?.tableNumber) {
+        <div class="flex-between">
+            <span class="bold">MESA:</span>
+            <span>Mesa {{ order?.tableNumber }}</span>
+        </div>
+        }
+        @if (customer) {
+        <div class="mt-2 pt-2 border-t border-dotted border-gray-400">
+            <div class="bold uppercase">Cliente:</div>
+            <div class="pl-2">{{ customer.name }}</div>
+            <div class="pl-2">NIT: {{ customer.nit || 'C/F' }}</div>
+        </div>
+        }
+    </div>
+
+    <!-- Items Table -->
+    <div class="divider"></div>
+    <div class="flex-between bold text-[11px] mb-1 uppercase px-1">
+        <span class="w-[10%]">Cant</span>
+        <span class="w-[50%]">Descripción</span>
+        <span class="w-[20%] text-right">P.Unit</span>
+        <span class="w-[20%] text-right">V.Gravada</span>
+    </div>
+    <div class="divider border-black border-t-2 mb-2"></div>
+
+    <div class="space-y-1.5 text-[11px] px-1">
+        @for (item of displayItems; track $index) {
+        <div class="flex items-start">
+            <span class="w-[10%]">{{ item.quantity }}</span>
+            <span class="w-[50%] leading-tight pr-1">{{ item.product.name }}</span>
+            <span class="w-[20%] text-right font-mono">
+                {{ item.unitPrice | number:'1.2-2' }}
+            </span>
+            <span class="w-[20%] text-right font-mono">
+                {{ item.subtotal | number:'1.2-2' }}
+            </span>
+        </div>
+        } @empty {
+        <div class="text-center italic py-2 text-gray-400">Sin productos seleccionados</div>
+        }
+    </div>
+
+    <!-- Totals Section -->
+    <div class="divider border-t-2 border-black mt-4"></div>
+    <div class="space-y-1 text-[11px] px-1">
+        <div class="flex justify-between items-center">
+            <span class="bold uppercase">SUBTOTAL:</span>
+            <span class="font-mono text-base">{{ (displaySummary?.subtotal || 0) |
+                currency:tenantService.getCurrencyCode():'symbol-narrow' }}</span>
+        </div>
+
+        @if ((displaySummary?.discountAmount || 0) > 0) {
+        <div class="flex justify-between items-center text-red-700 italic">
+            <span>DESCUENTO:</span>
+            <span class="font-mono">-{{ (displaySummary!.discountAmount) |
+                currency:tenantService.getCurrencyCode():'symbol-narrow' }}</span>
+        </div>
+        }
+
+        <div class="divider border-black mb-1"></div>
+        <div class="flex justify-between items-center bold text-lg py-1 border-y border-black">
+            <span>TOTAL A PAGAR:</span>
+            <span class="font-mono">{{ (displaySummary?.grandTotal || 0) |
+                currency:tenantService.getCurrencyCode():'symbol-narrow' }}</span>
+        </div>
+    </div>
+
+    <!-- Amount in words -->
+    @if (!isPreCount) {
+    <div class="mt-4 px-1 text-[10px] italic bold text-center">
+        {{ formatTotalInWords() }}
+    </div>
+    }
+
+    <!-- Footer: QR & Link -->
+    <div class="text-center mt-6">
+        @if (!isPreCount) {
+        <!-- QR Placeholder -->
+        <div class="inline-block border-2 border-black p-2 mb-4">
+            <div class="w-24 h-24 bg-gray-100 flex items-center justify-center border border-gray-300">
+                <span class="text-[8px] text-gray-400 uppercase font-sans">CÓDIGO QR<br>DTE</span>
+            </div>
+        </div>
+
+        <div class="text-[10px] space-y-1">
+            <p class="m-0 font-bold uppercase">¡GRACIAS POR SU PREFERENCIA!</p>
+            <p class="m-0 italic">Consulte su documento en:</p>
+            <p class="m-0 underline font-mono text-[9px]">https://portal.factura.gob.sv/consulta/</p>
+        </div>
+        } @else {
+        <div class="text-[10px] border-2 border-black p-2 bg-gray-50 uppercase bold">
+            Este documento no tiene valor fiscal<br>
+            solo para control interno
+        </div>
+        }
+
+        <p class="mt-4 text-[9px] text-gray-400 italic">Software de Facturación v2.0</p>
+    </div>
+</div>

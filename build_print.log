@@ -1,0 +1,45 @@
+
+> restaurant@1.1.0 build
+> ng build
+
+[33m>[39m Building...
+[32m√[39m Building...
+[1mInitial chunk files[22m[2m | [22m[1mNames[22m                       [2m | [22m [1mRaw size[22m[2m | [22m[1mEstimated transfer size[22m
+[32mchunk-RYKIU3PT.js[39m  [2m | [22m[2m-[22m                           [2m | [22m[36m289.53 kB[39m[2m | [22m               [36m78.75 kB[39m
+[32mstyles-SU4A4CS7.css[39m[2m | [22m[2mstyles[22m                      [2m | [22m [36m62.02 kB[39m[2m | [22m                [36m8.79 kB[39m
+[32mmain-DULLEPVO.js[39m   [2m | [22m[2mmain[22m                        [2m | [22m  [36m3.23 kB[39m[2m | [22m                [36m1.15 kB[39m
+[32mchunk-QR644D3T.js[39m  [2m | [22m[2m-[22m                           [2m | [22m  [36m1.39 kB[39m[2m | [22m              [36m578 bytes[39m
+[32mchunk-PYLPMA7X.js[39m  [2m | [22m[2m-[22m                           [2m | [22m  [36m1.08 kB[39m[2m | [22m              [36m509 bytes[39m
+[32mchunk-T6RYPRNA.js[39m  [2m | [22m[2m-[22m                           [2m | [22m[36m645 bytes[39m[2m | [22m              [36m645 bytes[39m
+
+[1m [22m                  [2m | [22m[1mInitial total[22m               [2m | [22m[1m357.91 kB[22m[2m | [22m               [1m90.42 kB[22m
+
+[1mLazy chunk files[22m   [2m | [22m[1mNames[22m                       [2m | [22m [1mRaw size[22m[2m | [22m[1mEstimated transfer size[22m
+[32mchunk-2O2G7SUS.js[39m  [2m | [22m[2m-[22m                           [2m | [22m [36m48.45 kB[39m[2m | [22m                [36m9.57 kB[39m
+[32mchunk-NTATETRQ.js[39m  [2m | [22m[2mpos-page-component[22m          [2m | [22m [36m39.96 kB[39m[2m | [22m                [36m9.36 kB[39m
+[32mchunk-ZQ3K2Y4G.js[39m  [2m | [22m[2mmain-layout-component[22m       [2m | [22m [36m21.31 kB[39m[2m | [22m                [36m5.07 kB[39m
+[32mchunk-Y6UZYUV4.js[39m  [2m | [22m[2minventory-page-component[22m    [2m | [22m [36m20.57 kB[39m[2m | [22m                [36m4.85 kB[39m
+[32mchunk-NXFJYMHU.js[39m  [2m | [22m[2mproducts-page-component[22m     [2m | [22m [36m19.67 kB[39m[2m | [22m                [36m4.80 kB[39m
+[32mchunk-BBXNUUA5.js[39m  [2m | [22m[2musers-page-component[22m        [2m | [22m [36m17.10 kB[39m[2m | [22m                [36m4.69 kB[39m
+[32mchunk-3PQN5CT7.js[39m  [2m | [22m[2mtables-page-component[22m       [2m | [22m [36m14.29 kB[39m[2m | [22m                [36m4.10 kB[39m
+[32mchunk-H35FGDK6.js[39m  [2m | [22m[2minvoices-page-component[22m     [2m | [22m [36m13.82 kB[39m[2m | [22m                [36m4.16 kB[39m
+[32mchunk-QVYXWPQ2.js[39m  [2m | [22m[2mroles-page-component[22m        [2m | [22m [36m12.75 kB[39m[2m | [22m                [36m3.80 kB[39m
+[32mchunk-OZASFZPY.js[39m  [2m | [22m[2msetup[22m                       [2m | [22m [36m12.26 kB[39m[2m | [22m                [36m2.74 kB[39m
+[32mchunk-6DFFMQPW.js[39m  [2m | [22m[2mtaxes-page-component[22m        [2m | [22m [36m12.04 kB[39m[2m | [22m                [36m3.68 kB[39m
+[32mchunk-TH3CQK6H.js[39m  [2m | [22m[2mcash-register-page-component[22m[2m | [22m [36m12.02 kB[39m[2m | [22m                [36m3.32 kB[39m
+[32mchunk-ATRP4DCV.js[39m  [2m | [22m[2mbranches-page-component[22m     [2m | [22m [36m11.83 kB[39m[2m | [22m                [36m3.38 kB[39m
+[32mchunk-OVCGMC6D.js[39m  [2m | [22m[2mcategories-page-component[22m   [2m | [22m [36m11.24 kB[39m[2m | [22m                [36m3.27 kB[39m
+[32mchunk-LYL4HD6M.js[39m  [2m | [22m[2m-[22m                           [2m | [22m [36m11.12 kB[39m[2m | [22m                [36m3.57 kB[39m
+[2m...and 14 more lazy chunks files. Use "--verbose" to show all the files.[22m
+
+Application bundle generation complete. [25.927 seconds] - 2026-03-11T00:32:56.126Z
+
+▲ [WARNING] NG8113: InvoiceTicketComponent is not used within the template of OrderTicketComponent [plugin angular-compiler]
+
+    src/app/features/pos/order-ticket/order-ticket.component.ts:19:51:
+      19 │ ...: [CommonModule, FormsModule, RouterLink, InvoiceTicketComponent],
+         ╵                                              ~~~~~~~~~~~~~~~~~~~~~~
+
+
+Output location: D:\Proyectos\Restaurante\fe\dist\fe
+

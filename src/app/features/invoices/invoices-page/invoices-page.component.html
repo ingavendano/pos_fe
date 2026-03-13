@@ -1,0 +1,145 @@
+<div class="p-6 h-full flex flex-col bg-gray-50">
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+    <div>
+      <h1 class="text-2xl font-black text-gray-800 tracking-tight">Historial de Facturas</h1>
+      <p class="text-sm text-gray-500 mt-1">Busca y consulta todas las comandas de esta sucursal.</p>
+    </div>
+
+    <div class="relative w-full md:w-96">
+      <input type="text" [(ngModel)]="searchTerm"
+        class="w-full py-2.5 pl-10 pr-4 text-sm text-gray-700 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-sm"
+        placeholder="Buscar por # Orden, Mesero o Mesa...">
+      <svg class="w-5 h-5 text-gray-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  @if (invoiceService.isLoading()) {
+  <div
+    class="flex-1 flex flex-col items-center justify-center p-8 bg-white rounded-2xl border border-gray-100 shadow-sm">
+    <svg class="animate-spin h-10 w-10 text-indigo-600 mb-4" fill="none" viewBox="0 0 24 24">
+      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+      <path class="opacity-75" fill="currentColor"
+        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+      </path>
+    </svg>
+    <span class="text-gray-500 font-medium tracking-wide">Cargando historial...</span>
+  </div>
+  } @else if (invoiceService.error()) {
+  <!-- Error State -->
+  <div
+    class="flex-1 flex flex-col items-center justify-center p-8 bg-white rounded-2xl border border-red-100 shadow-sm text-center">
+    <div class="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mb-4">
+      <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>
+    </div>
+    <h3 class="text-xl font-bold text-gray-800 mb-2">Ups, algo salió mal</h3>
+    <p class="text-gray-500 max-w-md">{{ invoiceService.error() }}</p>
+    <button (click)="loadData()"
+      class="mt-6 px-6 py-2 bg-indigo-50 text-indigo-700 font-medium rounded-lg hover:bg-indigo-100 transition-colors">
+      Reintentar
+    </button>
+  </div>
+  } @else {
+  <!-- Data Table -->
+  <div class="flex-1 bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden flex flex-col">
+    <div class="overflow-x-auto flex-1 h-full relative">
+      <table class="w-full text-left text-sm text-gray-600 whitespace-nowrap">
+        <thead class="text-xs text-gray-500 uppercase bg-gray-50 sticky top-0 z-10 shadow-sm border-b border-gray-200">
+          <tr>
+            <th scope="col" class="px-6 py-4 font-bold tracking-wider"># Orden</th>
+            <th scope="col" class="px-6 py-4 font-bold tracking-wider">Fecha</th>
+            <th scope="col" class="px-6 py-4 font-bold tracking-wider">Mesa</th>
+            <th scope="col" class="px-6 py-4 font-bold tracking-wider">Atendió</th>
+            <th scope="col" class="px-6 py-4 font-bold tracking-wider">Total</th>
+            <th scope="col" class="px-6 py-4 font-bold tracking-wider">Estatus</th>
+            <th scope="col" class="px-6 py-4 font-bold tracking-wider text-right">Acciones</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+          @for (order of filteredInvoices(); track order.id) {
+          <tr class="hover:bg-gray-50 transition-colors">
+            <td
+              class="px-6 py-4 font-medium text-gray-900 border-l-4 border-l-transparent hover:border-l-indigo-500 transition-all">
+              #{{ order.consecutiveNumber || order.id }}</td>
+            <td class="px-6 py-4 text-gray-500">{{ order.createdAt | date:'dd MMM yyyy, HH:mm' }}</td>
+            <td class="px-6 py-4">
+              <div class="flex items-center">
+                <div
+                  class="w-8 h-8 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center font-bold text-xs mr-3">
+                  T{{ order.tableNumber }}
+                </div>
+                <span class="font-medium text-gray-700">Mesa {{ order.tableNumber }}</span>
+              </div>
+            </td>
+            <td class="px-6 py-4">
+              <div class="flex items-center space-x-2">
+                <div
+                  class="w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-[10px] uppercase">
+                  {{ (order.waiterName || 'XX').substring(0,2).toUpperCase() }}
+                </div>
+                <span>{{ order.waiterName || 'Mesero' }}</span>
+              </div>
+            </td>
+            <td class="px-6 py-4 font-bold text-gray-900">
+              {{ order.total | currency:tenantService.getCurrencyCode():'symbol-narrow' }}
+            </td>
+            <td class="px-6 py-4">
+              @if (order.status === 'PAID') {
+              <span
+                class="px-2.5 py-1 text-xs font-bold text-emerald-700 bg-emerald-100 rounded-lg inline-flex items-center">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"></span>
+                Pagado
+              </span>
+              } @else {
+              <span
+                class="px-2.5 py-1 text-xs font-bold text-amber-700 bg-amber-100 rounded-lg inline-flex items-center">
+                <span class="w-1.5 h-1.5 rounded-full bg-amber-500 mr-1.5"></span>
+                Abierta
+              </span>
+              }
+            </td>
+            <td class="px-6 py-4 text-right">
+              <button (click)="viewInvoice(order)"
+                class="text-indigo-600 hover:text-indigo-900 bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-lg transition-colors font-medium text-xs">
+                Ver Detalles
+              </button>
+            </td>
+          </tr>
+          } @empty {
+          <tr>
+            <td colspan="7" class="px-6 py-12 text-center text-gray-500">
+              <svg class="w-12 h-12 mx-auto text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                </path>
+              </svg>
+              <p class="text-sm">No se encontraron facturas con esos criterios de búsqueda.</p>
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination / Stats Footer summary -->
+    <div
+      class="bg-gray-50 border-t border-gray-200 px-6 py-3 text-xs text-gray-500 flex justify-between items-center rounded-b-2xl">
+      <span>Mostrando <strong>{{ filteredInvoices().length }}</strong> resultados.</span>
+      <span>Total histórico listado: <strong class="text-gray-800">{{ currentTotalSum() |
+          currency:tenantService.getCurrencyCode():'symbol-narrow' }}</strong></span>
+    </div>
+  </div>
+  }
+</div>
+
+<!-- Modal for details -->
+@if (selectedOrder()) {
+<app-invoice-detail-modal [order]="selectedOrder()!" (close)="selectedOrder.set(null)">
+</app-invoice-detail-modal>
+}

@@ -1,0 +1,17 @@
+<div class="flex h-screen bg-gray-50 font-sans text-gray-900 overflow-hidden">
+  <!-- Sidebar is fixed on the left -->
+  <app-sidebar></app-sidebar>
+
+  <!-- Main Content wrapper -->
+  <div class="flex-1 flex flex-col h-full overflow-hidden">
+    <app-header></app-header>
+
+    <!-- The routable view -->
+    <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50/50">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+
+  <!-- Real-time notification toasts -->
+  <app-notification-toast></app-notification-toast>
+</div>

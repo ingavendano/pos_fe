@@ -1,0 +1,124 @@
+<div class="p-6 max-w-4xl mx-auto animate-fade-in-down">
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-2xl font-bold text-gray-800">Configuración de la Empresa</h1>
+        <p class="text-gray-500 mt-1">Administra la información legal y general de tu negocio para facturación y
+            documentos.</p>
+    </div>
+
+    @if (successMessage()) {
+    <div
+        class="mb-6 p-4 bg-green-50 border-l-4 border-green-500 text-green-700 rounded-r-lg flex items-center shadow-sm animate-pulse-subtle">
+        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+        </svg>
+        {{ successMessage() }}
+    </div>
+    }
+
+    @if (errorMessage()) {
+    <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-r-lg flex items-center shadow-sm">
+        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+        {{ errorMessage() }}
+    </div>
+    }
+
+    <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+        <div class="p-8">
+            <form (ngSubmit)="saveSettings()" #tenantForm="ngForm" class="space-y-8">
+                <!-- Información General -->
+                <section>
+                    <h2 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4 border-b pb-2">
+                        Información General</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-1">
+                            <label class="block text-sm font-medium text-gray-700">Nombre de la Empresa</label>
+                            <input type="text" name="name" [(ngModel)]="formModel.name" required
+                                class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-gray-800"
+                                placeholder="Ej. Restaurante Gourmet">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="block text-sm font-medium text-gray-700">Dominio / Subdominio</label>
+                            <input type="text" name="domain" [(ngModel)]="formModel.domain" required readonly
+                                class="w-full px-4 py-2.5 bg-gray-100 border border-gray-200 rounded-xl text-gray-500 cursor-not-allowed">
+                            <p class="text-[10px] text-gray-400 italic">El dominio no puede ser modificado por
+                                seguridad.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Información Legal (NUEVOS CAMPOS) -->
+                <section>
+                    <h2 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4 border-b pb-2">
+                        Información Legal / Fiscal</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-1">
+                            <label class="block text-sm font-medium text-gray-700">NIT</label>
+                            <input type="text" name="nit" [(ngModel)]="formModel.nit" maxlength="30"
+                                class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all text-gray-800"
+                                placeholder="Número de Identificación Tributaria">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="block text-sm font-medium text-gray-700">NRC</label>
+                            <input type="text" name="nrc" [(ngModel)]="formModel.nrc" maxlength="30"
+                                class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all text-gray-800"
+                                placeholder="Número de Registro de Contribuyente">
+                        </div>
+                        <div class="md:col-span-2 space-y-1">
+                            <label class="block text-sm font-medium text-gray-700">Giro (Actividad Económica)</label>
+                            <input type="text" name="giro" [(ngModel)]="formModel.giro" maxlength="200"
+                                class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all text-gray-800"
+                                placeholder="Ej. Servicios de Restaurante y Cafetería">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Moneda -->
+                <section>
+                    <h2 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4 border-b pb-2">
+                        Localización y Moneda</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-1">
+                            <label class="block text-sm font-medium text-gray-700">Código de Moneda</label>
+                            <input type="text" name="currency" [(ngModel)]="formModel.currency" required maxlength="3"
+                                class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-gray-800"
+                                placeholder="Ej. USD, GTQ, MXN">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="block text-sm font-medium text-gray-700">Símbolo de Moneda</label>
+                            <input type="text" name="currencySymbol" [(ngModel)]="formModel.currencySymbol" required
+                                maxlength="5"
+                                class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-gray-800"
+                                placeholder="Ej. $, Q, €">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Footer / Actions -->
+                <div class="pt-6 border-t flex justify-end">
+                    <button type="submit" [disabled]="isSaving() || !tenantForm.valid"
+                        class="px-8 py-3 bg-indigo-600 text-white rounded-xl font-semibold shadow-lg shadow-indigo-200 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center">
+                        @if (isSaving()) {
+                        <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                            </circle>
+                            <path class="opacity-75" fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                            </path>
+                        </svg>
+                        Guardando...
+                        } @else {
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                        </svg>
+                        Guardar Cambios
+                        }
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

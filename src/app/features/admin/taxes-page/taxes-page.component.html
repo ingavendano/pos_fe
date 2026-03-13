@@ -1,0 +1,184 @@
+<div class="p-6 h-full flex flex-col bg-gray-50">
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+    <div>
+      <h1 class="text-2xl font-black text-gray-800 tracking-tight">Impuestos y Cargos</h1>
+      <p class="text-sm text-gray-500 mt-1">Configura IVA, Impuestos sobre Servicio o Propinas extra.</p>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <button (click)="openModal()"
+        class="flex items-center justify-center px-4 py-2.5 bg-indigo-600 text-white text-sm font-semibold rounded-xl hover:bg-indigo-700 transition-colors shadow-sm whitespace-nowrap">
+        <svg class="w-5 h-5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+        Nuevo Impuesto
+      </button>
+    </div>
+  </div>
+
+  <!-- Taxes Table -->
+  <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm text-gray-500">
+        <thead class="text-xs text-gray-700 uppercase bg-gray-50/50 border-b border-gray-100">
+          <tr>
+            <th scope="col" class="px-6 py-4 font-bold">Identificador</th>
+            <th scope="col" class="px-6 py-4 font-bold">Concepto (Nombre)</th>
+            <th scope="col" class="px-6 py-4 font-bold">Porcentaje (%)</th>
+            <th scope="col" class="px-6 py-4 font-bold">Estado</th>
+            <th scope="col" class="px-6 py-4 font-bold text-right">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (taxService.isLoading()) {
+          <tr>
+            <td colspan="5" class="px-6 py-8 text-center text-gray-500">
+              <div class="flex justify-center items-center">
+                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-indigo-600" xmlns="http://www.w3.org/2000/svg"
+                  fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                  </path>
+                </svg>
+                Cargando catálogo...
+              </div>
+            </td>
+          </tr>
+          } @else if (taxService.getTaxes().length === 0) {
+          <tr>
+            <td colspan="5" class="px-6 py-12 text-center text-gray-500">
+              <div class="flex flex-col items-center justify-center">
+                <svg class="w-12 h-12 text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                    d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z">
+                  </path>
+                </svg>
+                <p class="text-base font-medium text-gray-900">Sin configuración de tasas impositivas</p>
+                <p class="text-sm mt-1">Habilita leyes tributarias como el IVA si requieres facturación con impuestos.
+                </p>
+              </div>
+            </td>
+          </tr>
+          } @else {
+          @for (tax of taxService.getTaxes(); track tax.id) {
+          <tr class="bg-white border-b border-gray-50 hover:bg-gray-50/50 transition-colors"
+            [class.opacity-50]="!tax.isActive">
+            <td class="px-6 py-4 font-bold text-gray-900">#{{ tax.id }}</td>
+            <td class="px-6 py-4">
+              <div class="font-medium text-gray-900">{{ tax.name }}</div>
+            </td>
+            <td class="px-6 py-4">
+              <span
+                class="inline-flex items-center px-2.5 py-1 rounded-md text-sm font-bold bg-indigo-50 text-indigo-700">
+                {{ tax.percentage }} %
+              </span>
+            </td>
+            <td class="px-6 py-4">
+              <button (click)="toggleActive(tax)"
+                class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2"
+                [ngClass]="tax.isActive ? 'bg-indigo-600' : 'bg-gray-200'" role="switch"
+                [attr.aria-checked]="tax.isActive">
+                <span aria-hidden="true"
+                  class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+                  [ngClass]="tax.isActive ? 'translate-x-5' : 'translate-x-0'"></span>
+              </button>
+            </td>
+            <td class="px-6 py-4 text-right">
+              <div class="flex items-center justify-end gap-2">
+                <button (click)="openModal(tax)"
+                  class="p-2 text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors"
+                  title="Editar Tasa">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z">
+                    </path>
+                  </svg>
+                </button>
+                <button (click)="deleteTax(tax.id!)"
+                  class="p-2 text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors"
+                  title="Eliminar Registro">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                    </path>
+                  </svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+          }
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Tax Modal -->
+@if (isModalOpen()) {
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+  <div class="absolute inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity" (click)="closeModal()"></div>
+
+  <div
+    class="bg-white rounded-2xl shadow-xl w-full max-w-sm relative z-10 flex flex-col max-h-[90vh] overflow-hidden animate-fade-in">
+
+    <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
+      <h2 class="text-lg font-bold text-gray-800">{{ editingTax() ? 'Modificar Tasa' : 'Añadir Nuevo Impuesto' }}</h2>
+      <button (click)="closeModal()"
+        class="text-gray-400 hover:text-gray-600 transition-colors bg-white hover:bg-gray-100 p-1.5 rounded-lg border border-transparent hover:border-gray-200">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+
+    <div class="p-6 overflow-y-auto">
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Cargos / Concepto Tributario *</label>
+          <input type="text" [(ngModel)]="taxForm.name"
+            class="w-full py-2.5 px-3 text-sm text-gray-900 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow"
+            placeholder="Ej. IVA o Tarifa de Servicio Público">
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Porcentaje de Cargo (%) *</label>
+          <input type="number" step="0.01" min="0" [(ngModel)]="taxForm.percentage"
+            class="w-full py-2.5 px-3 text-sm text-gray-900 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow"
+            placeholder="16.00">
+        </div>
+
+        <div class="flex items-center mt-6">
+          <input id="active-checkbox" type="checkbox" [(ngModel)]="taxForm.isActive"
+            class="w-4 h-4 text-indigo-600 bg-gray-100 border-gray-300 rounded focus:ring-indigo-500">
+          <label for="active-checkbox" class="ml-2 text-sm font-medium text-gray-900">Aplicar automáticamente en todas
+            las órdenes nuevas</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="px-6 py-4 border-t border-gray-100 bg-gray-50/50 flex justify-end gap-3">
+      <button (click)="closeModal()"
+        class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors shadow-sm">
+        Cancelar
+      </button>
+      <button (click)="saveTax()" [disabled]="isSaving() || !isFormValid()"
+        class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center">
+        @if (isSaving()) {
+        <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+          </path>
+        </svg>
+        Guardando...
+        } @else {
+        Guardar
+        }
+      </button>
+    </div>
+  </div>
+</div>
+}

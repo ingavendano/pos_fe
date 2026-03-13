@@ -1,0 +1,218 @@
+<div class="p-6 h-full flex flex-col bg-gray-50">
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+    <div>
+      <h1 class="text-2xl font-black text-gray-800 tracking-tight">Mesas</h1>
+      <p class="text-sm text-gray-500 mt-1">Configura las mesas de tu restaurante por sucursal.</p>
+    </div>
+
+    <div class="flex items-center gap-3 w-full md:w-auto">
+      <!-- Branch Filter -->
+      <div class="relative w-full md:w-56">
+        <select [(ngModel)]="filterBranchId" (ngModelChange)="onBranchChange()"
+          class="w-full py-2.5 px-3 text-sm text-gray-700 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all shadow-sm appearance-none">
+          <option [ngValue]="null" disabled selected>Filtrar por Sucursal</option>
+          @for (branch of branchService.getBranches(); track branch.id) {
+          <option [ngValue]="branch.id">{{ branch.name }}</option>
+          }
+        </select>
+      </div>
+      <!-- Search -->
+      <div class="relative w-full md:w-72">
+        <input type="text" [(ngModel)]="searchTerm"
+          class="w-full py-2.5 pl-10 pr-4 text-sm text-gray-700 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-sm"
+          placeholder="Buscar mesa...">
+        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+          <svg class="w-4 h-4 text-gray-400 font-bold" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+        </div>
+      </div>
+      <button (click)="openModal()" [disabled]="!filterBranchId()"
+        class="flex items-center justify-center px-4 py-2.5 bg-indigo-600 text-white text-sm font-semibold rounded-xl hover:bg-indigo-700 disabled:opacity-50 disabled:hover:bg-indigo-600 transition-colors shadow-sm whitespace-nowrap">
+        <svg class="w-5 h-5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+        Nueva
+      </button>
+    </div>
+  </div>
+
+  <!-- Tables Data Grid -->
+  <div class="flex-1 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm text-gray-500">
+        <thead class="text-xs text-gray-700 uppercase bg-gray-50/50 border-b border-gray-100">
+          <tr>
+            <th scope="col" class="px-6 py-4 font-bold">Mesa #</th>
+            <th scope="col" class="px-6 py-4 font-bold">Capacidad</th>
+            <th scope="col" class="px-6 py-4 font-bold">Sucursal</th>
+            <th scope="col" class="px-6 py-4 font-bold">Estatus</th>
+            <th scope="col" class="px-6 py-4 font-bold text-right">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (isLoadingTables()) {
+          <tr>
+            <td colspan="5" class="px-6 py-8 text-center text-gray-500">
+              <div class="flex justify-center items-center">
+                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-indigo-600" xmlns="http://www.w3.org/2000/svg"
+                  fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                  </path>
+                </svg>
+                Cargando mesas...
+              </div>
+            </td>
+          </tr>
+          } @else if (filteredTables().length === 0) {
+          <tr>
+            <td colspan="5" class="px-6 py-12 text-center text-gray-500">
+              <div class="flex flex-col items-center justify-center">
+                <svg class="w-12 h-12 text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                    d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
+                  </path>
+                </svg>
+                <p class="text-base font-medium text-gray-900">No hay mesas encontradas</p>
+                <p class="text-sm mt-1">Selecciona una sucursal o crea una nueva mesa local.</p>
+              </div>
+            </td>
+          </tr>
+          } @else {
+          @for (table of filteredTables(); track table.id) {
+          <tr class="bg-white border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
+            <td class="px-6 py-4 font-bold text-gray-900">
+              <span
+                class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-indigo-50 text-indigo-700 mr-2">
+                {{ table.number }}
+              </span>
+            </td>
+            <td class="px-6 py-4">
+              <div class="font-medium text-gray-900">{{ table.capacity }} pax</div>
+            </td>
+            <td class="px-6 py-4 text-gray-500">
+              {{ getBranchName(table.branch?.id || null) }}
+            </td>
+            <td class="px-6 py-4 text-gray-500">
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" [ngClass]="{
+                               'bg-green-100 text-green-800': table.status === 'AVAILABLE',
+                               'bg-red-100 text-red-800': table.status === 'OCCUPIED',
+                               'bg-amber-100 text-amber-800': table.status === 'RESERVED'
+                            }">
+                {{ table.status === 'AVAILABLE' ? 'Libre' : (table.status === 'OCCUPIED' ? 'Ocupada' : 'Reservada') }}
+              </span>
+            </td>
+            <td class="px-6 py-4 text-right">
+              <div class="flex items-center justify-end gap-2">
+                <button (click)="openModal(table)"
+                  class="p-2 text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors"
+                  title="Editar">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z">
+                    </path>
+                  </svg>
+                </button>
+                <button (click)="deleteTable(table.id!)"
+                  class="p-2 text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors" title="Eliminar">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                    </path>
+                  </svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+          }
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Table Modal -->
+@if (isModalOpen()) {
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+  <!-- Backdrop -->
+  <div class="absolute inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity" (click)="closeModal()"></div>
+
+  <!-- Modal Content -->
+  <div
+    class="bg-white rounded-2xl shadow-xl w-full max-w-sm relative z-10 flex flex-col max-h-[90vh] overflow-hidden animate-fade-in">
+
+    <!-- Header -->
+    <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
+      <h2 class="text-lg font-bold text-gray-800">{{ editingTable() ? 'Editar Mesa' : 'Nueva Mesa' }}</h2>
+      <button (click)="closeModal()"
+        class="text-gray-400 hover:text-gray-600 transition-colors bg-white hover:bg-gray-100 p-1.5 rounded-lg border border-transparent hover:border-gray-200">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Body -->
+    <div class="p-6 overflow-y-auto">
+      <div class="space-y-4">
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Mesa N° *</label>
+            <input type="number" min="1" [(ngModel)]="tableForm.number"
+              class="w-full py-2.5 px-3 text-sm text-gray-900 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Capacidad *</label>
+            <input type="number" min="1" [(ngModel)]="tableForm.capacity"
+              class="w-full py-2.5 px-3 text-sm text-gray-900 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Estatus Actual</label>
+          <select [(ngModel)]="tableForm.status"
+            class="w-full py-2.5 px-3 text-sm text-gray-900 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow appearance-none">
+            <option value="AVAILABLE">Libre (Disponible)</option>
+            <option value="OCCUPIED">Ocupada</option>
+            <option value="RESERVED">Reservada</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Sucursal Asociada *</label>
+          <input type="text" [value]="getBranchName(filterBranchId())" disabled
+            class="w-full py-2.5 px-3 text-sm text-gray-500 bg-gray-50 border border-gray-300 rounded-xl focus:outline-none cursor-not-allowed">
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="px-6 py-4 border-t border-gray-100 bg-gray-50/50 flex justify-end gap-3">
+      <button (click)="closeModal()"
+        class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors shadow-sm">
+        Cancelar
+      </button>
+      <button (click)="saveTable()" [disabled]="isSaving() || !isFormValid()"
+        class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center">
+        @if (isSaving()) {
+        <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+          </path>
+        </svg>
+        Guardando...
+        } @else {
+        Guardar
+        }
+      </button>
+    </div>
+  </div>
+</div>
+}

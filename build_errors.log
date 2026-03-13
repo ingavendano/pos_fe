@@ -1,0 +1,455 @@
+
+> restaurant@1.1.0 build
+> ng build
+
+[33m>[39m Building...
+[32m√[39m Building...
+Application bundle generation failed. [13.482 seconds] - 2026-03-10T23:48:54.238Z
+
+X [ERROR] TS2305: Module '"../models/pos.models"' has no exported member 'Branch'. [plugin angular-compiler]
+
+    src/app/core/services/branch.service.ts:4:9:
+      4 │ import { Branch } from '../models/pos.models';
+        ╵          ~~~~~~
+
+
+X [ERROR] TS18048: 'product.quantity' is possibly 'undefined'. [plugin angular-compiler]
+
+    src/app/core/services/cart.service.ts:133:35:
+      133 │ ...    const maxAllowed = product.quantity + (item.savedQuantity ...
+          ╵                           ~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS18048: 'item.product.price' is possibly 'undefined'. [plugin angular-compiler]
+
+    src/app/core/services/cart.service.ts:139:39:
+      139 │                     subtotal: newQty * item.product.price
+          ╵                                        ~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2345: Argument of type 'number | undefined' is not assignable to parameter of type 'number'.
+  Type 'undefined' is not assignable to type 'number'. [plugin angular-compiler]
+
+    src/app/core/services/cart.service.ts:144:50:
+      144 │                 const newQty = Math.min(quantity, maxAllowed);
+          ╵                                                   ~~~~~~~~~~
+
+
+X [ERROR] TS18048: 'product.price' is possibly 'undefined'. [plugin angular-compiler]
+
+    src/app/core/services/cart.service.ts:151:39:
+      151 │                     subtotal: newQty * product.price,
+          ╵                                        ~~~~~~~~~~~~~
+
+
+X [ERROR] TS18048: 'item.product.quantity' is possibly 'undefined'. [plugin angular-compiler]
+
+    src/app/core/services/cart.service.ts:168:31:
+      168 │ ...  const maxAllowed = item.product.quantity + (item.savedQuanti...
+          ╵                         ~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS18048: 'item.product.price' is possibly 'undefined'. [plugin angular-compiler]
+
+    src/app/core/services/cart.service.ts:174:43:
+      174 │                 subtotal: cappedQuantity * item.product.price
+          ╵                                            ~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2305: Module '"../models/pos.models"' has no exported member 'Category'. [plugin angular-compiler]
+
+    src/app/core/services/catalogue.service.ts:4:9:
+      4 │ import { Category, Product } from '../models/pos.models';
+        ╵          ~~~~~~~~
+
+
+X [ERROR] TS2459: Module '"../models/pos.models"' declares 'Product' locally, but it is not exported. [plugin angular-compiler]
+
+    src/app/core/services/catalogue.service.ts:4:19:
+      4 │ import { Category, Product } from '../models/pos.models';
+        ╵                    ~~~~~~~
+
+  'Product' is declared here.
+
+    src/app/core/models/pos.models.ts:1:9:
+      1 │ import { Product, Tax } from '../api/model';
+        ╵          ~~~~~~~
+
+
+X [ERROR] TS2459: Module '"../models/pos.models"' declares 'Product' locally, but it is not exported. [plugin angular-compiler]
+
+    src/app/core/services/dashboard.service.ts:5:9:
+      5 │ import { Product, Order } from '../models/pos.models';
+        ╵          ~~~~~~~
+
+  'Product' is declared here.
+
+    src/app/core/models/pos.models.ts:1:9:
+      1 │ import { Product, Tax } from '../api/model';
+        ╵          ~~~~~~~
+
+
+X [ERROR] TS2305: Module '"../models/pos.models"' has no exported member 'Order'. [plugin angular-compiler]
+
+    src/app/core/services/dashboard.service.ts:5:18:
+      5 │ import { Product, Order } from '../models/pos.models';
+        ╵                   ~~~~~
+
+
+X [ERROR] TS2305: Module '"../models/pos.models"' has no exported member 'Warehouse'. [plugin angular-compiler]
+
+    src/app/core/services/inventory.service.ts:6:9:
+      6 │ import { Warehouse, Inventory, Product } from '../models/pos.models';
+        ╵          ~~~~~~~~~
+
+
+X [ERROR] TS2305: Module '"../models/pos.models"' has no exported member 'Inventory'. [plugin angular-compiler]
+
+    src/app/core/services/inventory.service.ts:6:20:
+      6 │ import { Warehouse, Inventory, Product } from '../models/pos.models';
+        ╵                     ~~~~~~~~~
+
+
+X [ERROR] TS2459: Module '"../models/pos.models"' declares 'Product' locally, but it is not exported. [plugin angular-compiler]
+
+    src/app/core/services/inventory.service.ts:6:31:
+      6 │ import { Warehouse, Inventory, Product } from '../models/pos.models';
+        ╵                                ~~~~~~~
+
+  'Product' is declared here.
+
+    src/app/core/models/pos.models.ts:1:9:
+      1 │ import { Product, Tax } from '../api/model';
+        ╵          ~~~~~~~
+
+
+X [ERROR] TS2305: Module '"../models/pos.models"' has no exported member 'RestaurantTable'. [plugin angular-compiler]
+
+    src/app/core/services/table.service.ts:6:9:
+      6 │ import { RestaurantTable } from '../models/pos.models';
+        ╵          ~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2459: Module '"../models/pos.models"' declares 'Tax' locally, but it is not exported. [plugin angular-compiler]
+
+    src/app/core/services/tax.service.ts:4:9:
+      4 │ import { Tax } from '../models/pos.models';
+        ╵          ~~~
+
+  'Tax' is declared here.
+
+    src/app/core/models/pos.models.ts:1:18:
+      1 │ import { Product, Tax } from '../api/model';
+        ╵                   ~~~
+
+
+X [ERROR] TS2322: Type 'string | undefined' is not assignable to type 'string'.
+  Type 'undefined' is not assignable to type 'string'. [plugin angular-compiler]
+
+    src/app/features/admin/branches-page/branches-page.component.ts:50:16:
+      50 │                 name: branch.name,
+         ╵                 ~~~~
+
+  The expected type comes from property 'name' which is declared here on type '{ name: string; address: string; phone: string; }'
+
+    src/app/features/admin/branches-page/branches-page.component.ts:24:8:
+      24 │         name: '',
+         ╵         ~~~~~~~~
+
+
+X [ERROR] TS2345: Argument of type 'number | undefined' is not assignable to parameter of type 'number'.
+  Type 'undefined' is not assignable to type 'number'. [plugin angular-compiler]
+
+    src/app/features/admin/branches-page/branches-page.component.ts:72:46:
+      72 │ ...nchService.updateBranch(this.editingBranch()!.id, this.branchForm)
+         ╵                            ~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2532: Object is possibly 'undefined'. [plugin angular-compiler]
+
+    src/app/features/admin/inventory-page/inventory-page.component.html:74:77:
+      74 │ ...      <td class="px-6 py-4 font-medium">{{item.product.name}}</td>
+         ╵                                                           ~~~~
+
+  Error occurs in the template of component InventoryPageComponent.
+
+    src/app/features/admin/inventory-page/inventory-page.component.ts:17:17:
+      17 │     templateUrl: './inventory-page.component.html',
+         ╵                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2532: Object is possibly 'undefined'. [plugin angular-compiler]
+
+    src/app/features/admin/inventory-page/inventory-page.component.html:76:79:
+      76 │ ...<td class="px-6 py-4 text-gray-500">{{item.product.minStock}}</td>
+         ╵                                                       ~~~~~~~~
+
+  Error occurs in the template of component InventoryPageComponent.
+
+    src/app/features/admin/inventory-page/inventory-page.component.ts:17:17:
+      17 │     templateUrl: './inventory-page.component.html',
+         ╵                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2532: Object is possibly 'undefined'. [plugin angular-compiler]
+
+    src/app/features/admin/inventory-page/inventory-page.component.html:79:82:
+      79 │ ...text-xs ' + (item.quantity <= item.product.minStock ? 'bg-red-1...
+         ╵                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component InventoryPageComponent.
+
+    src/app/features/admin/inventory-page/inventory-page.component.ts:17:17:
+      17 │     templateUrl: './inventory-page.component.html',
+         ╵                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2532: Object is possibly 'undefined'. [plugin angular-compiler]
+
+    src/app/features/admin/inventory-page/inventory-page.component.html:79:82:
+      79 │ ...text-xs ' + (item.quantity <= item.product.minStock ? 'bg-red-1...
+         ╵                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component InventoryPageComponent.
+
+    src/app/features/admin/inventory-page/inventory-page.component.ts:17:17:
+      17 │     templateUrl: './inventory-page.component.html',
+         ╵                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2532: Object is possibly 'undefined'. [plugin angular-compiler]
+
+    src/app/features/admin/inventory-page/inventory-page.component.html:79:112:
+      79 │ ...em.quantity <= item.product.minStock ? 'bg-red-100 text-red-700...
+         ╵                                ~~~~~~~~
+
+  Error occurs in the template of component InventoryPageComponent.
+
+    src/app/features/admin/inventory-page/inventory-page.component.ts:17:17:
+      17 │     templateUrl: './inventory-page.component.html',
+         ╵                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2532: Object is possibly 'undefined'. [plugin angular-compiler]
+
+    src/app/features/admin/inventory-page/inventory-page.component.html:80:38:
+      80 │ ...           {{item.quantity <= item.product.minStock ? 'BAJO STO...
+         ╵                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component InventoryPageComponent.
+
+    src/app/features/admin/inventory-page/inventory-page.component.ts:17:17:
+      17 │     templateUrl: './inventory-page.component.html',
+         ╵                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2532: Object is possibly 'undefined'. [plugin angular-compiler]
+
+    src/app/features/admin/inventory-page/inventory-page.component.html:80:38:
+      80 │ ...           {{item.quantity <= item.product.minStock ? 'BAJO STO...
+         ╵                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component InventoryPageComponent.
+
+    src/app/features/admin/inventory-page/inventory-page.component.ts:17:17:
+      17 │     templateUrl: './inventory-page.component.html',
+         ╵                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2532: Object is possibly 'undefined'. [plugin angular-compiler]
+
+    src/app/features/admin/inventory-page/inventory-page.component.html:80:68:
+      80 │ ...em.quantity <= item.product.minStock ? 'BAJO STOCK' : 'OK' }} <...
+         ╵                                ~~~~~~~~
+
+  Error occurs in the template of component InventoryPageComponent.
+
+    src/app/features/admin/inventory-page/inventory-page.component.ts:17:17:
+      17 │     templateUrl: './inventory-page.component.html',
+         ╵                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2551: Property 'isDefault' does not exist on type 'Warehouse'. Did you mean 'default'? [plugin angular-compiler]
+
+    src/app/features/admin/inventory-page/inventory-page.component.html:119:47:
+      119 │                                 <span *ngIf="w.isDefault"
+          ╵                                                ~~~~~~~~~
+
+  Error occurs in the template of component InventoryPageComponent.
+
+    src/app/features/admin/inventory-page/inventory-page.component.ts:17:17:
+      17 │     templateUrl: './inventory-page.component.html',
+         ╵                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2532: Object is possibly 'undefined'. [plugin angular-compiler]
+
+    src/app/features/admin/inventory-page/inventory-page.component.html:195:79:
+      195 │ ...   <td class="px-6 py-4 font-medium">{{item.warehouse.name}}</td>
+          ╵                                                          ~~~~
+
+  Error occurs in the template of component InventoryPageComponent.
+
+    src/app/features/admin/inventory-page/inventory-page.component.ts:17:17:
+      17 │     templateUrl: './inventory-page.component.html',
+         ╵                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2532: Object is possibly 'undefined'. [plugin angular-compiler]
+
+    src/app/features/admin/inventory-page/inventory-page.component.html:196:65:
+      196 │ ...                 <td class="px-6 py-4">{{item.product.name}}</td>
+          ╵                                                          ~~~~
+
+  Error occurs in the template of component InventoryPageComponent.
+
+    src/app/features/admin/inventory-page/inventory-page.component.ts:17:17:
+      17 │     templateUrl: './inventory-page.component.html',
+         ╵                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2532: Object is possibly 'undefined'. [plugin angular-compiler]
+
+    src/app/features/admin/inventory-page/inventory-page.component.html:198:79:
+      198 │ ...td class="px-6 py-4 text-gray-500">{{item.product.minStock}}</td>
+          ╵                                                      ~~~~~~~~
+
+  Error occurs in the template of component InventoryPageComponent.
+
+    src/app/features/admin/inventory-page/inventory-page.component.ts:17:17:
+      17 │     templateUrl: './inventory-page.component.html',
+         ╵                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2551: Property 'branchId' does not exist on type 'RestaurantTable'. Did you mean 'branch'? [plugin angular-compiler]
+
+    src/app/features/admin/tables-page/tables-page.component.html:97:45:
+      97 │                       {{ getBranchName(table.branchId) }}
+         ╵                                              ~~~~~~~~
+
+  Error occurs in the template of component TablesPageComponent.
+
+    src/app/features/admin/tables-page/tables-page.component.ts:12:17:
+      12 │     templateUrl: './tables-page.component.html'
+         ╵                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2345: Argument of type 'number | undefined' is not assignable to parameter of type 'number'.
+  Type 'undefined' is not assignable to type 'number'. [plugin angular-compiler]
+
+    src/app/features/admin/tables-page/tables-page.component.html:119:53:
+      119 │                           (click)="deleteTable(table.id)"
+          ╵                                                      ~~
+
+  Error occurs in the template of component TablesPageComponent.
+
+    src/app/features/admin/tables-page/tables-page.component.ts:12:17:
+      12 │     templateUrl: './tables-page.component.html'
+         ╵                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'role' does not exist on type 'UserResponseDto'. [plugin angular-compiler]
+
+    src/app/features/admin/users-page/users-page.component.html:96:62:
+      96 │                             [ngClass]="getRoleBadgeColor(user.role)">
+         ╵                                                               ~~~~
+
+  Error occurs in the template of component UsersPageComponent.
+
+    src/app/features/admin/users-page/users-page.component.ts:12:17:
+      12 │     templateUrl: './users-page.component.html'
+         ╵                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'role' does not exist on type 'UserResponseDto'. [plugin angular-compiler]
+
+    src/app/features/admin/users-page/users-page.component.html:97:46:
+      97 │                           {{ getRoleName(user.role) }}
+         ╵                                               ~~~~
+
+  Error occurs in the template of component UsersPageComponent.
+
+    src/app/features/admin/users-page/users-page.component.ts:12:17:
+      12 │     templateUrl: './users-page.component.html'
+         ╵                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2345: Argument of type 'number | undefined' is not assignable to parameter of type 'number'.
+  Type 'undefined' is not assignable to type 'number'. [plugin angular-compiler]
+
+    src/app/features/admin/users-page/users-page.component.html:120:58:
+      120 │                              (click)="deactivateUser(user.id)"
+          ╵                                                           ~~
+
+  Error occurs in the template of component UsersPageComponent.
+
+    src/app/features/admin/users-page/users-page.component.ts:12:17:
+      12 │     templateUrl: './users-page.component.html'
+         ╵                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'customer' does not exist on type 'InvoiceDto'. [plugin angular-compiler]
+
+    src/app/features/invoices/invoice-detail-modal/invoice-detail-modal.component.html:27:53:
+      27 │ ....customer || order.invoice?.customer" [paymentMethod]="order.in...
+         ╵                                ~~~~~~~~
+
+  Error occurs in the template of component InvoiceDetailModalComponent.
+
+    src/app/features/invoices/invoice-detail-modal/invoice-detail-modal.component.ts:13:15:
+      13 │   templateUrl: './invoice-detail-modal.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'restaurantTable' does not exist on type 'OrderResponseDto'. [plugin angular-compiler]
+
+    src/app/features/invoices/invoices-page/invoices-page.component.html:62:36:
+      62 │                           T{{ order.restaurantTable.number }}
+         ╵                                     ~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component InvoicesPageComponent.
+
+    src/app/features/invoices/invoices-page/invoices-page.component.ts:13:15:
+      13 │   templateUrl: './invoices-page.component.html'
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'restaurantTable' does not exist on type 'OrderResponseDto'. [plugin angular-compiler]
+
+    src/app/features/invoices/invoices-page/invoices-page.component.html:64:78:
+      64 │ ...dium text-gray-700">Mesa {{ order.restaurantTable.number }}</span>
+         ╵                                      ~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component InvoicesPageComponent.
+
+    src/app/features/invoices/invoices-page/invoices-page.component.ts:13:15:
+      13 │   templateUrl: './invoices-page.component.html'
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'user' does not exist on type 'OrderResponseDto'. [plugin angular-compiler]
+
+    src/app/features/invoices/invoices-page/invoices-page.component.html:70:35:
+      70 │                           {{ order.user.name.substring(0,2) }}
+         ╵                                    ~~~~
+
+  Error occurs in the template of component InvoicesPageComponent.
+
+    src/app/features/invoices/invoices-page/invoices-page.component.ts:13:15:
+      13 │   templateUrl: './invoices-page.component.html'
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'user' does not exist on type 'OrderResponseDto'. [plugin angular-compiler]
+
+    src/app/features/invoices/invoices-page/invoices-page.component.html:72:39:
+      72 │                         <span>{{ order.user.name }}</span>
+         ╵                                        ~~~~
+
+  Error occurs in the template of component InvoicesPageComponent.
+
+    src/app/features/invoices/invoices-page/invoices-page.component.ts:13:15:
+      13 │   templateUrl: './invoices-page.component.html'
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+

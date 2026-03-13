@@ -1,0 +1,38 @@
+/* You can add global styles to this file, and also import other style files */
+
+@import 'tailwindcss';
+
+#print-section {
+  display: none;
+}
+
+@media print {
+  @page {
+    margin: 0;
+    size: 80mm auto;
+  }
+
+  body {
+    background-color: white !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Hide the main single-page application */
+  app-root,
+  .cdk-overlay-container {
+    display: none !important;
+  }
+
+  /* Show only the dynamically injected print section */
+  #print-section {
+    display: block !important;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 80mm;
+    margin: 0;
+    padding: 0;
+    background: white;
+  }
+}
