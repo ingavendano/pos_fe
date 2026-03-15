@@ -103,7 +103,13 @@ export class CartService {
             return { tax, calculatedAmount };
         });
 
-        const totalTaxes = taxes.reduce((sum, t) => sum + t.calculatedAmount, 0);
+        const positiveTaxes = taxes
+            .filter(t => t.tax.type === 'STANDARD' || t.tax.type === 'TIP' || !t.tax.type)
+            .reduce((sum, t) => sum + t.calculatedAmount, 0);
+
+        const retentions = taxes
+            .filter(t => t.tax.type === 'RETENTION')
+            .reduce((sum, t) => sum + t.calculatedAmount, 0);
 
         // Compute discount
         const dType = this.discountType();
@@ -117,7 +123,7 @@ export class CartService {
             }
         }
 
-        const grandTotal = currentSubtotal + totalTaxes - discountAmount;
+        const grandTotal = currentSubtotal + positiveTaxes - retentions - discountAmount;
 
         return {
             subtotal: currentSubtotal,

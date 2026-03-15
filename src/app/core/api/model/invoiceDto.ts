@@ -20,5 +20,7 @@ export interface InvoiceDto {
     generationCode?: string;
     controlNumber?: string;
     receptionSello?: string;
+    dteStatus?: string;
+    rejectionReason?: string;
 }
 

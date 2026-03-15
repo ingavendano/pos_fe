@@ -3,15 +3,18 @@ import { CommonModule, CurrencyPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CatalogueService } from '../../../core/services/catalogue.service';
 import { Product, Category } from '../../../core/api/model';
+import { RecipeManagementComponent } from '../recipe-management/recipe-management.component';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-products-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, CurrencyPipe],
+  imports: [CommonModule, FormsModule, CurrencyPipe, RecipeManagementComponent],
   templateUrl: './products-page.component.html'
 })
 export default class ProductsPageComponent implements OnInit {
   catalogueService = inject(CatalogueService);
+  authService = inject(AuthService);
 
   searchTerm = signal('');
   filterCategoryId = signal<number | null>(null);
@@ -26,6 +29,10 @@ export default class ProductsPageComponent implements OnInit {
   restockingProduct = signal<Product | null>(null);
   restockQuantity = 0;
 
+  // Recipe modal state
+  isRecipeModalOpen = signal(false);
+  recipeTargetProduct = signal<Product | null>(null);
+
   productForm = {
     name: '',
     description: '',
@@ -34,7 +41,8 @@ export default class ProductsPageComponent implements OnInit {
     isAvailable: true,
     quantity: 0,
     minStock: 0,
-    imageUrl: ''
+    imageUrl: '',
+    isSellable: true
   };
 
   filteredProducts = computed(() => {
@@ -84,7 +92,8 @@ export default class ProductsPageComponent implements OnInit {
         isAvailable: product.isAvailable ?? true,
         quantity: product.quantity ?? 0,
         minStock: product.minStock ?? 0,
-        imageUrl: product.imageUrl ?? ''
+        imageUrl: product.imageUrl ?? '',
+        isSellable: product.isSellable ?? true
       };
     } else {
       this.productForm = {
@@ -95,7 +104,8 @@ export default class ProductsPageComponent implements OnInit {
         isAvailable: true,
         quantity: 0,
         minStock: 0,
-        imageUrl: ''
+        imageUrl: '',
+        isSellable: true
       };
     }
     this.isModalOpen.set(true);
@@ -119,7 +129,8 @@ export default class ProductsPageComponent implements OnInit {
       isAvailable: this.productForm.isAvailable,
       quantity: this.productForm.quantity,
       minStock: this.productForm.minStock,
-      imageUrl: this.productForm.imageUrl || undefined
+      imageUrl: this.productForm.imageUrl || undefined,
+      isSellable: this.productForm.isSellable
     };
 
     const request$ = this.editingProduct()?.id
@@ -193,5 +204,16 @@ export default class ProductsPageComponent implements OnInit {
         this.isSaving.set(false);
       }
     });
+  }
+
+  // --- Recipe Logic ---
+  openRecipeModal(product: Product) {
+    this.recipeTargetProduct.set(product);
+    this.isRecipeModalOpen.set(true);
+  }
+
+  closeRecipeModal() {
+    this.isRecipeModalOpen.set(false);
+    this.recipeTargetProduct.set(null);
   }
 }

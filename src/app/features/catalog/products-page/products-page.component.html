@@ -28,6 +28,7 @@
           </svg>
         </div>
       </div>
+      @if (authService.hasWritePermission('PRODUCTS')) {
       <button (click)="openModal(null)"
         class="flex items-center justify-center px-4 py-2.5 bg-indigo-600 text-white text-sm font-semibold rounded-xl hover:bg-indigo-700 transition-colors shadow-sm whitespace-nowrap">
         <svg class="w-5 h-5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -35,6 +36,7 @@
         </svg>
         Nuevo
       </button>
+      }
     </div>
   </div>
 
@@ -103,6 +105,14 @@
             </td>
             <td class="px-6 py-4 text-right">
               <div class="flex items-center justify-end gap-2">
+                @if (authService.hasWritePermission('PRODUCTS')) {
+                <button (click)="openRecipeModal(product)"
+                  class="p-2 text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors"
+                  title="Gestionar Receta">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                  </svg>
+                </button>
                 <button (click)="openRestockModal(product)"
                   class="p-2 text-emerald-600 bg-emerald-50 hover:bg-emerald-100 rounded-lg transition-colors"
                   title="Reabastecer">
@@ -119,6 +129,8 @@
                     </path>
                   </svg>
                 </button>
+                }
+                @if (authService.hasDeletePermission('PRODUCTS')) {
                 <button (click)="deleteProduct(product.id!)"
                   class="p-2 text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors" title="Eliminar">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -127,6 +139,7 @@
                     </path>
                   </svg>
                 </button>
+                }
               </div>
             </td>
           </tr>
@@ -230,6 +243,17 @@
             <span class="ml-3 text-sm font-medium text-gray-700">Disponible para la Venta</span>
           </label>
         </div>
+
+        <div class="col-span-1 md:col-span-2 flex items-center mt-2">
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" [(ngModel)]="productForm.isSellable" class="sr-only peer">
+            <div
+              class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600">
+            </div>
+            <span class="ml-3 text-sm font-medium text-gray-700">Producto Vendible (Mostrar en POS)</span>
+          </label>
+          <p class="text-[10px] text-gray-400 ml-14 -mt-1 block w-full">Desactivar para insumos/ingredientes que no se venden solos.</p>
+        </div>
       </div>
 
     </div>
@@ -253,6 +277,43 @@
         } @else {
         Guardar
         }
+      </button>
+    </div>
+  </div>
+</div>
+}
+
+<!-- Recipe Modal -->
+@if (isRecipeModalOpen()) {
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+  <!-- Backdrop -->
+  <div class="absolute inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity" (click)="closeRecipeModal()"></div>
+
+  <!-- Modal Content -->
+  <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg relative z-10 flex flex-col max-h-[90vh] overflow-hidden animate-fade-in">
+    <!-- Header -->
+    <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
+      <h2 class="text-lg font-bold text-gray-800">Receta / Componentes: {{ recipeTargetProduct()?.name }}</h2>
+      <button (click)="closeRecipeModal()"
+        class="text-gray-400 hover:text-gray-600 transition-colors bg-white hover:bg-gray-100 p-1.5 rounded-lg border border-transparent hover:border-gray-200">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Body -->
+    <div class="p-6 overflow-y-auto">
+      @if (recipeTargetProduct()) {
+        <app-recipe-management [product]="recipeTargetProduct()!"></app-recipe-management>
+      }
+    </div>
+
+    <!-- Footer -->
+    <div class="px-6 py-4 border-t border-gray-100 bg-gray-50/50 flex justify-end">
+      <button (click)="closeRecipeModal()"
+        class="px-6 py-2 bg-indigo-600 text-white text-sm font-bold rounded-lg hover:bg-indigo-700 transition-colors shadow-sm">
+        Listo
       </button>
     </div>
   </div>

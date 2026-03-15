@@ -15,6 +15,7 @@ export interface Tax {
     name?: string;
     percentage?: number;
     isActive?: boolean;
+    type?: 'STANDARD' | 'TIP' | 'RETENTION';
     tenant?: Tenant;
 }
 

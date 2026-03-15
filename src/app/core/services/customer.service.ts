@@ -10,6 +10,13 @@ export interface Customer {
     phone?: string;
     email?: string;
     nit?: string;
+    nrc?: string;
+    giro?: string;
+    documentType?: string;
+    documentNumber?: string;
+    departamento?: string;
+    municipio?: string;
+    complemento?: string;
 }
 
 @Injectable({ providedIn: 'root' })

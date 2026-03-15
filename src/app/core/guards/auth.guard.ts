@@ -7,6 +7,12 @@ export const authGuard: CanActivateFn = (route, state) => {
     const router = inject(Router);
 
     if (authService.isAuthenticated()) {
+        const requiredPermission = route.data['permission'];
+        if (requiredPermission && !authService.hasPermission(requiredPermission)) {
+            // Logged in but no permission for this module
+            console.warn(`User does not have permission for ${requiredPermission}. Redirecting to POS.`);
+            return router.parseUrl('/pos');
+        }
         return true;
     }
 

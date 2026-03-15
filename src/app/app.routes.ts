@@ -19,13 +19,13 @@ export const routes: Routes = [
         canActivate: [setupGuard, authGuard],
         children: [
             { path: '', redirectTo: 'pos', pathMatch: 'full' },
-            { path: 'pos', loadComponent: () => import('./features/pos/pos-page/pos-page.component').then(m => m.PosPageComponent) },
-            { path: 'invoices', loadComponent: () => import('./features/invoices/invoices-page/invoices-page.component') },
+            { path: 'pos', loadComponent: () => import('./features/pos/pos-page/pos-page.component').then(m => m.PosPageComponent), data: { permission: 'POS' } },
+            { path: 'invoices', loadComponent: () => import('./features/invoices/invoices-page/invoices-page.component'), data: { permission: 'INVOICES' } },
             {
                 path: 'catalog',
                 children: [
-                    { path: 'categories', loadComponent: () => import('./features/catalog/categories-page/categories-page.component') },
-                    { path: 'products', loadComponent: () => import('./features/catalog/products-page/products-page.component') }
+                    { path: 'categories', loadComponent: () => import('./features/catalog/categories-page/categories-page.component'), data: { permission: 'CATEGORIES' } },
+                    { path: 'products', loadComponent: () => import('./features/catalog/products-page/products-page.component'), data: { permission: 'PRODUCTS' } }
                 ]
             },
             {
@@ -33,47 +33,63 @@ export const routes: Routes = [
                 children: [
                     {
                         path: 'dashboard',
-                        loadComponent: () => import('./features/admin/dashboard/dashboard-page/dashboard-page.component')
+                        loadComponent: () => import('./features/admin/dashboard/dashboard-page/dashboard-page.component'),
+                        data: { permission: 'REPORTS' }
                     },
                     {
                         path: 'branches',
-                        loadComponent: () => import('./features/admin/branches-page/branches-page.component')
+                        loadComponent: () => import('./features/admin/branches-page/branches-page.component'),
+                        data: { permission: 'BRANCHES' }
                     },
                     {
                         path: 'tables',
-                        loadComponent: () => import('./features/admin/tables-page/tables-page.component')
+                        loadComponent: () => import('./features/admin/tables-page/tables-page.component'),
+                        data: { permission: 'TABLES' }
                     },
                     {
                         path: 'users',
-                        loadComponent: () => import('./features/admin/users-page/users-page.component')
+                        loadComponent: () => import('./features/admin/users-page/users-page.component'),
+                        data: { permission: 'USERS' }
                     },
                     {
                         path: 'taxes',
-                        loadComponent: () => import('./features/admin/taxes-page/taxes-page.component')
+                        loadComponent: () => import('./features/admin/taxes-page/taxes-page.component'),
+                        data: { permission: 'TAXES' }
+                    },
+                    {
+                        path: 'expenses',
+                        loadComponent: () => import('./features/admin/expenses-page/expenses-page.component').then(m => m.ExpensesPageComponent),
+                        data: { permission: 'REPORTS' }
                     },
                     {
                         path: 'roles',
-                        loadComponent: () => import('./features/admin/roles-page/roles-page.component').then(m => m.RolesPageComponent)
+                        loadComponent: () => import('./features/admin/roles-page/roles-page.component').then(m => m.RolesPageComponent),
+                        data: { permission: 'ROLES' }
                     },
                     {
                         path: 'reports',
-                        loadComponent: () => import('./features/admin/reports-page/reports-page.component').then(m => m.ReportsPageComponent)
+                        loadComponent: () => import('./features/admin/reports-page/reports-page.component').then(m => m.ReportsPageComponent),
+                        data: { permission: 'REPORTS' }
                     },
                     {
                         path: 'customers',
-                        loadComponent: () => import('./features/admin/customers-page/customers-page.component').then(m => m.CustomersPageComponent)
+                        loadComponent: () => import('./features/admin/customers-page/customers-page.component').then(m => m.CustomersPageComponent),
+                        data: { permission: 'CUSTOMERS' }
                     },
                     {
                         path: 'cash-register',
-                        loadComponent: () => import('./features/admin/cash-register-page/cash-register-page.component').then(m => m.CashRegisterPageComponent)
+                        loadComponent: () => import('./features/admin/cash-register-page/cash-register-page.component').then(m => m.CashRegisterPageComponent),
+                        data: { permission: 'SETTINGS' }
                     },
                     {
                         path: 'inventory',
-                        loadComponent: () => import('./features/admin/inventory-page/inventory-page.component').then(m => m.InventoryPageComponent)
+                        loadComponent: () => import('./features/admin/inventory-page/inventory-page.component').then(m => m.InventoryPageComponent),
+                        data: { permission: 'INVENTORY' }
                     },
                     {
                         path: 'settings',
-                        loadComponent: () => import('./features/admin/tenant-settings-page/tenant-settings-page.component')
+                        loadComponent: () => import('./features/admin/tenant-settings-page/tenant-settings-page.component'),
+                        data: { permission: 'SETTINGS' }
                     }
                 ]
             }
@@ -83,7 +99,8 @@ export const routes: Routes = [
         // Kitchen Display — fullscreen, no sidebar layout
         path: 'kitchen',
         loadComponent: () => import('./features/kitchen/kitchen-display/kitchen-display.component').then(m => m.KitchenDisplayComponent),
-        canActivate: [setupGuard, authGuard]
+        canActivate: [setupGuard, authGuard],
+        data: { permission: 'KITCHEN' }
     },
     { path: '**', redirectTo: 'pos' }
 ];

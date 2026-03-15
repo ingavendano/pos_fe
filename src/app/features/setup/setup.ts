@@ -27,10 +27,20 @@ export class SetupComponent {
 
   componentsList = [
     { id: 'DASHBOARD', name: 'Dashboard' },
-    { id: 'POS', name: 'Punto de Venta' },
+    { id: 'POS', name: 'Punto de Venta / Mesas' },
+    { id: 'KITCHEN', name: 'Cocina' },
+    { id: 'INVOICES', name: 'Facturación' },
     { id: 'PRODUCTS', name: 'Catálogo de Productos' },
-    { id: 'ORDERS', name: 'Órdenes' },
-    { id: 'USERS', name: 'Usuarios y Roles' }
+    { id: 'CATEGORIES', name: 'Categorías' },
+    { id: 'INVENTORY', name: 'Inventario / Stock' },
+    { id: 'CUSTOMERS', name: 'Clientes' },
+    { id: 'REPORTS', name: 'Reportes y Estadísticas' },
+    { id: 'SETTINGS', name: 'Configuración Empresa' },
+    { id: 'BRANCHES', name: 'Sucursales' },
+    { id: 'TABLES', name: 'Gestión de Mesas' },
+    { id: 'USERS', name: 'Personal (Usuarios)' },
+    { id: 'ROLES', name: 'Roles y Permisos' },
+    { id: 'TAXES', name: 'Impuestos' }
   ];
 
   constructor() {
@@ -111,11 +121,11 @@ export class SetupComponent {
       },
       {
         name: 'WAITER',
-        description: 'Mesero',
-        permissions: this.componentsList.filter(c => c.id === 'POS' || c.id === 'ORDERS').map(c => ({
+        description: 'Mesero / Operativo',
+        permissions: this.componentsList.map(c => ({
           component: c.id,
-          canRead: true,
-          canWrite: true,
+          canRead: ['POS', 'KITCHEN', 'INVOICES', 'PRODUCTS', 'CATEGORIES', 'CUSTOMERS'].includes(c.id),
+          canWrite: ['POS', 'KITCHEN', 'INVOICES', 'CUSTOMERS'].includes(c.id),
           canDelete: false
         }))
       }]

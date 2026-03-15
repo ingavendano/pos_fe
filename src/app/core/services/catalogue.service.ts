@@ -38,13 +38,16 @@ export class CatalogueService {
     // Current active category (null means all)
     activeCategoryId = signal<number | null>(null);
 
-    // Derives products based on current active category
+    // Derives products based on current active category and sellable status
     filteredProducts = computed(() => {
         const active = this.activeCategoryId();
+        const allProducts = this.products().filter(p => p.isSellable !== false);
+        
         if (active === null) {
-            return this.products();
+            return allProducts;
         }
-        return this.productsByCategory().get(active) || [];
+        
+        return allProducts.filter(p => p.category?.id === active);
     });
 
     constructor() {

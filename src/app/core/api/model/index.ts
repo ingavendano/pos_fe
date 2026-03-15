@@ -21,6 +21,7 @@ export * from './paymentMethodBreakdown';
 export * from './permissionRequest';
 export * from './permissionResponse';
 export * from './product';
+export * from './recipe';
 export * from './productSales';
 export * from './refreshTokenRequest';
 export * from './response';

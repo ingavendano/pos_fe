@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { InvoiceDetailModalComponent } from '../invoice-detail-modal/invoice-detail-modal.component';
 import { InvoiceService } from '../../../core/services/invoice.service';
 import { TenantService } from '../../../core/services/tenant.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { OrderResponseDto } from '../../../core/api/model';
 
 @Component({
@@ -15,6 +16,7 @@ import { OrderResponseDto } from '../../../core/api/model';
 export default class InvoicesPageComponent implements OnInit {
   invoiceService = inject(InvoiceService);
   tenantService = inject(TenantService);
+  authService = inject(AuthService);
 
   searchTerm = signal('');
   selectedOrder = signal<OrderResponseDto | null>(null);

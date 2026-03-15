@@ -54,7 +54,8 @@
             <thead>
                 <tr class="text-left text-xs uppercase text-gray-400 border-b border-gray-100">
                     <th class="px-5 py-3 font-medium">Nombre</th>
-                    <th class="px-5 py-3 font-medium">NIT</th>
+                    <th class="px-5 py-3 font-medium">Doc/NIT</th>
+                    <th class="px-5 py-3 font-medium">NRC</th>
                     <th class="px-5 py-3 font-medium">Teléfono</th>
                     <th class="px-5 py-3 font-medium">Email</th>
                     <th class="px-5 py-3 font-medium text-right">Acciones</th>
@@ -64,7 +65,8 @@
                 @for (c of filtered(); track c.id) {
                 <tr class="border-b border-gray-50 last:border-0 hover:bg-gray-50">
                     <td class="px-5 py-3 font-medium text-gray-800">{{ c.name }}</td>
-                    <td class="px-5 py-3 text-gray-500">{{ c.nit || '—' }}</td>
+                    <td class="px-5 py-3 text-gray-500">{{ c.documentNumber || c.nit || '—' }}</td>
+                    <td class="px-5 py-3 text-gray-500">{{ c.nrc || '—' }}</td>
                     <td class="px-5 py-3 text-gray-500">{{ c.phone || '—' }}</td>
                     <td class="px-5 py-3 text-gray-500">{{ c.email || '—' }}</td>
                     <td class="px-5 py-3 text-right">
@@ -101,11 +103,69 @@
                     <p class="text-red-500 text-xs mt-1">El nombre es obligatorio (mínimo 2 caracteres).</p>
                     }
                 </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Tipo Doc.</label>
+                        <select formControlName="documentType" class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500">
+                            <option value="">Seleccione...</option>
+                            <option value="13">DUI</option>
+                            <option value="37">NIT</option>
+                            <option value="02">Pasaporte</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Núm. Documento</label>
+                        <input formControlName="documentNumber" type="text" placeholder="Ej. 00000000-0"
+                            class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">NIT</label>
+                        <input formControlName="nit" type="text" placeholder="NIT (si es distinto)"
+                            class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">NRC</label>
+                        <input formControlName="nrc" type="text" placeholder="Registro Fiscal"
+                            class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500">
+                    </div>
+                </div>
+
                 <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1">NIT / RFC / RUC</label>
-                    <input formControlName="nit" type="text" placeholder="Número de identificación fiscal"
+                    <label class="block text-xs font-medium text-gray-600 mb-1">Giro / Actividad Económica</label>
+                    <input formControlName="giro" type="text" placeholder="Ej. Restaurante, Servicios..."
                         class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500">
                 </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Departamento</label>
+                        <select formControlName="departamento" class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500">
+                            <option value="">Seleccione...</option>
+                            @for (d of departamentos; track d.code) {
+                                <option [value]="d.code">{{ d.name }}</option>
+                            }
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Municipio</label>
+                        <select formControlName="municipio" class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500">
+                            <option value="">Seleccione...</option>
+                            @for (m of availableMunicipios(); track m.code) {
+                                <option [value]="m.code">{{ m.name }}</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium text-gray-600 mb-1">Dirección / Complemento</label>
+                    <textarea formControlName="complemento" placeholder="Calle, pasaje, local..." rows="2"
+                        class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500"></textarea>
+                </div>
+
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-medium text-gray-600 mb-1">Teléfono</label>

@@ -25,6 +25,7 @@
           <tr>
             <th scope="col" class="px-6 py-4 font-bold">Identificador</th>
             <th scope="col" class="px-6 py-4 font-bold">Concepto (Nombre)</th>
+            <th scope="col" class="px-6 py-4 font-bold">Tipo</th>
             <th scope="col" class="px-6 py-4 font-bold">Porcentaje (%)</th>
             <th scope="col" class="px-6 py-4 font-bold">Estado</th>
             <th scope="col" class="px-6 py-4 font-bold text-right">Acciones</th>
@@ -68,6 +69,17 @@
             <td class="px-6 py-4 font-bold text-gray-900">#{{ tax.id }}</td>
             <td class="px-6 py-4">
               <div class="font-medium text-gray-900">{{ tax.name }}</div>
+            </td>
+            <td class="px-6 py-4">
+              <span class="px-2 py-1 text-xs font-semibold rounded-full"
+                [ngClass]="{
+                  'bg-blue-100 text-blue-700': tax.type === 'STANDARD',
+                  'bg-orange-100 text-orange-700': tax.type === 'TIP',
+                  'bg-purple-100 text-purple-700': tax.type === 'RETENTION'
+                }">
+                {{ tax.type === 'STANDARD' ? 'Estándar / IVA' : 
+                   tax.type === 'TIP' ? 'Propina' : 'Retención' }}
+              </span>
             </td>
             <td class="px-6 py-4">
               <span
@@ -141,6 +153,16 @@
           <input type="text" [(ngModel)]="taxForm.name"
             class="w-full py-2.5 px-3 text-sm text-gray-900 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow"
             placeholder="Ej. IVA o Tarifa de Servicio Público">
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de Cargo *</label>
+          <select [(ngModel)]="taxForm.type"
+            class="w-full py-2.5 px-3 text-sm text-gray-900 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow">
+            <option value="STANDARD">Estándar (Suma, ej. IVA)</option>
+            <option value="TIP">Propina (Suma sobre subtotal)</option>
+            <option value="RETENTION">Retención (Resta, para Grandes Contribuyentes)</option>
+          </select>
         </div>
 
         <div>

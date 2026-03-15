@@ -6,6 +6,7 @@ import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { KitchenService, KitchenOrder } from '../../../core/services/kitchen.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { CatalogueService } from '../../../core/services/catalogue.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -18,10 +19,14 @@ import { Router } from '@angular/router';
 export class KitchenDisplayComponent implements OnInit, OnDestroy {
     private kitchenService = inject(KitchenService);
     private authService = inject(AuthService);
+    private catalogueService = inject(CatalogueService);
     private router = inject(Router);
 
     orders = signal<KitchenOrder[]>([]);
     lastRefresh = signal<Date>(new Date());
+    selectedCategoryIds = signal<number[]>([]);
+    availableCategories = computed(() => this.catalogueService.getCategories());
+    
     private pollSub?: Subscription;
 
     pendingOrders = computed(() => this.orders().filter(o => o.status === 'PENDING'));
@@ -36,10 +41,25 @@ export class KitchenDisplayComponent implements OnInit, OnDestroy {
             return;
         }
 
-        this.pollSub = this.kitchenService.startPolling().subscribe(orders => {
+        this.catalogueService.loadCatalogue();
+        this.restartPolling();
+    }
+
+    restartPolling() {
+        this.pollSub?.unsubscribe();
+        this.pollSub = this.kitchenService.startPolling(this.selectedCategoryIds()).subscribe(orders => {
             this.orders.set(orders);
             this.lastRefresh.set(new Date());
         });
+    }
+
+    toggleCategory(categoryId: number) {
+        this.selectedCategoryIds.update(ids => 
+            ids.includes(categoryId) 
+                ? ids.filter(id => id !== categoryId) 
+                : [...ids, categoryId]
+        );
+        this.restartPolling();
     }
 
     ngOnDestroy(): void {

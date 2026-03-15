@@ -7,10 +7,12 @@ import { ReportService, SalesReport } from '../../../core/services/report.servic
 import { AuthService } from '../../../core/services/auth.service';
 import { TenantService } from '../../../core/services/tenant.service';
 
+import { ProfitabilityDashboardComponent } from '../profitability-dashboard/profitability-dashboard.component';
+
 @Component({
     selector: 'app-reports-page',
     standalone: true,
-    imports: [CommonModule, FormsModule, DecimalPipe],
+    imports: [CommonModule, FormsModule, DecimalPipe, ProfitabilityDashboardComponent],
     changeDetection: ChangeDetectionStrategy.OnPush,
     templateUrl: './reports-page.component.html',
 })
@@ -18,6 +20,8 @@ export class ReportsPageComponent implements OnInit {
     private reportService = inject(ReportService);
     private authService = inject(AuthService);
     private tenantService = inject(TenantService);
+
+    selectedTab = signal<'sales' | 'profitability'>('sales');
 
     report = signal<SalesReport | null>(null);
     loading = signal(false);

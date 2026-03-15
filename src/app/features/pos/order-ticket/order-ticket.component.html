@@ -82,7 +82,10 @@
         <div class="flex justify-between items-start">
           <div>
             <p class="font-bold text-gray-800 group-hover:text-indigo-600 transition-colors">{{ c.name }}</p>
-            <p class="text-xs text-gray-500">NIT: {{ c.nit || 'C/F' }}</p>
+            <p class="text-[10px] text-gray-500">
+              {{ c.documentNumber || c.nit || 'C/F' }} 
+              @if (c.nrc) { &bull; NRC: {{ c.nrc }} }
+            </p>
           </div>
           <span class="text-[10px] font-medium text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">Seleccionar</span>
         </div>
@@ -162,9 +165,13 @@
 
       <!-- Dynamic Taxes loop using signals -->
       @for (taxItem of cartService.orderSummary().taxes; track taxItem.tax.id) {
-      <div class="flex justify-between text-gray-500 text-sm">
+      <div class="flex justify-between text-sm"
+        [class]="taxItem.tax.type === 'RETENTION' ? 'text-purple-600' : 'text-gray-500'">
         <span>{{ taxItem.tax.name }} ({{ taxItem.tax.percentage }}%)</span>
-        <span>{{ taxItem.calculatedAmount | currency:tenantService.getCurrencyCode():'symbol-narrow' }}</span>
+        <span>
+          {{ taxItem.tax.type === 'RETENTION' ? '-' : '' }}
+          {{ taxItem.calculatedAmount | currency:tenantService.getCurrencyCode():'symbol-narrow' }}
+        </span>
       </div>
       }
 

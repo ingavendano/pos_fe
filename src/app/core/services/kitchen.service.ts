@@ -38,11 +38,17 @@ export class KitchenService {
     }
 
     /** Returns an Observable that polls every 10 seconds */
-    startPolling(): Observable<KitchenOrder[]> {
+    startPolling(categoryIds: number[] = []): Observable<KitchenOrder[]> {
         this.isPolling.set(true);
         return interval(POLL_INTERVAL_MS).pipe(
             startWith(0),
-            switchMap(() => this.http.get<KitchenOrder[]>(`${this.API_URL}/branch/${this.branchId}`)),
+            switchMap(() => {
+                let params = '';
+                if (categoryIds.length > 0) {
+                    params = `?categoryIds=${categoryIds.join(',')}`;
+                }
+                return this.http.get<KitchenOrder[]>(`${this.API_URL}/branch/${this.branchId}${params}`);
+            }),
             share()
         );
     }

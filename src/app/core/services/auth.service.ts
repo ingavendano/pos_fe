@@ -113,4 +113,32 @@ export class AuthService {
             }
         }
     }
+
+    hasPermission(component: string): boolean {
+        const user = this.currentUser();
+        if (!user) return false;
+        if (user.role === 'ADMIN') return true;
+        const permission = user.permissions?.find(p => p.component === component);
+        return permission ? permission.canRead : false;
+    }
+
+    hasWritePermission(component: string): boolean {
+        const user = this.currentUser();
+        if (!user) return false;
+        if (user.role === 'ADMIN') return true;
+        const permission = user.permissions?.find(p => p.component === component);
+        return permission ? permission.canWrite : false;
+    }
+
+    hasDeletePermission(component: string): boolean {
+        const user = this.currentUser();
+        if (!user) return false;
+        if (user.role === 'ADMIN') return true;
+        const permission = user.permissions?.find(p => p.component === component);
+        return permission ? permission.canDelete : false;
+    }
+
+    hasRole(roleName: string): boolean {
+        return this.currentUser()?.role === roleName;
+    }
 }

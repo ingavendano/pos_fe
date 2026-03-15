@@ -21,7 +21,8 @@ export default class TaxesPageComponent implements OnInit {
     taxForm = {
         name: '',
         percentage: 16,
-        isActive: true
+        isActive: true,
+        type: 'STANDARD' as 'STANDARD' | 'TIP' | 'RETENTION'
     };
 
     ngOnInit() {
@@ -38,10 +39,11 @@ export default class TaxesPageComponent implements OnInit {
             this.taxForm = {
                 name: tax.name ?? '',
                 percentage: tax.percentage ?? 16,
-                isActive: tax.isActive ?? true
+                isActive: tax.isActive ?? true,
+                type: tax.type ?? 'STANDARD'
             };
         } else {
-            this.taxForm = { name: '', percentage: 16, isActive: true };
+            this.taxForm = { name: '', percentage: 16, isActive: true, type: 'STANDARD' };
         }
         this.isModalOpen.set(true);
     }
@@ -57,7 +59,8 @@ export default class TaxesPageComponent implements OnInit {
         const payload: Partial<Tax> = {
             name: this.taxForm.name,
             percentage: this.taxForm.percentage,
-            isActive: this.taxForm.isActive
+            isActive: this.taxForm.isActive,
+            type: this.taxForm.type
         };
 
         const request$ = this.editingTax()?.id

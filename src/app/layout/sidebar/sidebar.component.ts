@@ -6,6 +6,7 @@ import { InventoryService } from '../../core/services/inventory.service';
 import { Inventory } from '../../core/api/model';
 import packageJson from '../../../../package.json';
 import { TenantService, TenantSettings } from '../../core/services/tenant.service';
+import { SidebarService } from '../../core/services/sidebar.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -18,6 +19,10 @@ export class SidebarComponent implements OnInit {
   private authService = inject(AuthService);
   private inventoryService = inject(InventoryService);
   tenantService = inject(TenantService);
+  sidebarService = inject(SidebarService);
+
+  isCollapsed = this.sidebarService.isCollapsed;
+
 
   // Grupos del Sidebar
   salesOpen = signal(true);
@@ -55,14 +60,10 @@ export class SidebarComponent implements OnInit {
   }
 
   hasPermission(component: string): boolean {
-    const user = this.authService.currentUser();
-    if (!user) return false;
+    return this.authService.hasPermission(component);
+  }
 
-    // Admin has full access
-    if (user.role === 'ADMIN') return true;
-
-    // Check if the role has read permission for this specific component
-    const permission = user.permissions?.find(p => p.component === component);
-    return permission ? permission.canRead : false;
+  toggleSidebar() {
+    this.sidebarService.toggle();
   }
 }

@@ -5,6 +5,7 @@ import { UserService } from '../../../core/services/user.service';
 import { BranchService } from '../../../core/services/branch.service';
 import { RoleService } from '../../../core/services/role.service';
 import { UserResponseDto } from '../../../core/api/model';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
     selector: 'app-users-page',
@@ -16,6 +17,7 @@ export default class UsersPageComponent implements OnInit {
     userService = inject(UserService);
     branchService = inject(BranchService);
     roleService = inject(RoleService);
+    authService = inject(AuthService);
 
     searchTerm = signal('');
     filterRole = signal<string | null>(null);

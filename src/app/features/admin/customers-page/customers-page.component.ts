@@ -4,6 +4,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { CustomerService, Customer } from '../../../core/services/customer.service';
+import { DEPARTAMENTOS, MUNICIPIOS, GeographyItem } from '../../../core/constants/geography.constants';
 
 @Component({
     selector: 'app-customers-page',
@@ -23,6 +24,10 @@ export class CustomersPageComponent implements OnInit {
     editingCustomer = signal<Customer | null>(null);
     showForm = signal(false);
 
+    // Geografía
+    departamentos = DEPARTAMENTOS;
+    availableMunicipios = signal<GeographyItem[]>([]);
+
     filtered = computed(() => {
         const q = this.searchQuery().toLowerCase();
         return this.customers().filter(c =>
@@ -37,9 +42,38 @@ export class CustomersPageComponent implements OnInit {
         phone: [''],
         email: ['', [Validators.email]],
         nit: [''],
+        nrc: [''],
+        giro: [''],
+        documentType: [''],
+        documentNumber: [''],
+        departamento: [''],
+        municipio: [{ value: '', disabled: true }],
+        complemento: [''],
     });
 
-    ngOnInit(): void { this.load(); }
+    ngOnInit(): void { 
+        this.load(); 
+        
+        // Watch departamento changes to reset and enable/disable municipio
+        this.form.get('departamento')?.valueChanges.subscribe(val => {
+            const list = val ? (MUNICIPIOS[val] || []) : [];
+            this.availableMunicipios.set(list);
+
+            const municipioControl = this.form.get('municipio');
+            municipioControl?.setValue('', { emitEvent: false });
+            if (val) {
+                municipioControl?.enable({ emitEvent: false });
+            } else {
+                municipioControl?.disable({ emitEvent: false });
+            }
+        });
+
+        // Sync initial value (especially for edit mode)
+        const initialDep = this.form.get('departamento')?.value;
+        if (initialDep) {
+            this.availableMunicipios.set(MUNICIPIOS[initialDep] || []);
+        }
+    }
 
     load(): void {
         this.loading.set(true);
@@ -52,12 +86,31 @@ export class CustomersPageComponent implements OnInit {
     openNew(): void {
         this.editingCustomer.set(null);
         this.form.reset();
+        this.availableMunicipios.set([]);
         this.showForm.set(true);
     }
 
     openEdit(c: Customer): void {
         this.editingCustomer.set(c);
-        this.form.patchValue({ name: c.name, phone: c.phone ?? '', email: c.email ?? '', nit: c.nit ?? '' });
+        this.form.patchValue({ 
+            name: c.name, 
+            phone: c.phone ?? '', 
+            email: c.email ?? '', 
+            nit: c.nit ?? '',
+            nrc: c.nrc ?? '',
+            giro: c.giro ?? '',
+            documentType: c.documentType ?? '',
+            documentNumber: c.documentNumber ?? '',
+            departamento: c.departamento ?? '',
+            municipio: c.municipio ?? '',
+            complemento: c.complemento ?? ''
+        });
+        if (c.departamento) {
+            this.availableMunicipios.set(MUNICIPIOS[c.departamento] || []);
+            this.form.get('municipio')?.enable({ emitEvent: false });
+        } else {
+            this.availableMunicipios.set([]);
+        }
         this.showForm.set(true);
     }
 

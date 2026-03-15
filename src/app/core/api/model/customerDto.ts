@@ -15,5 +15,12 @@ export interface CustomerDto {
     nit?: string;
     email?: string;
     phone?: string;
+    nrc?: string;
+    giro?: string;
+    documentType?: string;
+    documentNumber?: string;
+    departamento?: string;
+    municipio?: string;
+    complemento?: string;
 }
 

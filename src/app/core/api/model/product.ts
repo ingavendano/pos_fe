@@ -20,6 +20,7 @@ export interface Product {
     quantity?: number;
     minStock?: number;
     imageUrl?: string;
+    isSellable?: boolean;
     category?: Category;
     tenant?: Tenant;
 }

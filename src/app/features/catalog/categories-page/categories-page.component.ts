@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CatalogueService } from '../../../core/services/catalogue.service';
 import { Category } from '../../../core/api/model';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
     selector: 'app-categories-page',
@@ -12,6 +13,7 @@ import { Category } from '../../../core/api/model';
 })
 export default class CategoriesPageComponent implements OnInit {
     catalogueService = inject(CatalogueService);
+    authService = inject(AuthService);
 
     searchTerm = signal('');
 
