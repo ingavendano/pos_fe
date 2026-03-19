@@ -1,6 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
 
 @import 'tailwindcss';
+@import './app/core/services/theme/themes.css';
 
 #print-section {
   display: none;
@@ -67,4 +68,41 @@
 .custom-scrollbar::-webkit-scrollbar-thumb {
   background: #e2e8f0;
   border-radius: 10px;
+}
+
+/* Sidebar: enlace activo según tema */
+aside a.router-link-active.active-link,
+aside a.active-link {
+  color: var(--color-sidebar-text-active) !important;
+  border-left-color: var(--color-primary-500) !important;
+}
+aside nav a:hover {
+  color: var(--color-sidebar-text-active);
+  background: var(--color-sidebar-active);
+}
+
+/* Micro-Interactions & Animations */
+
+@keyframes fly-to-cart {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.2); opacity: 0.8; }
+  100% { transform: translate(var(--target-x), var(--target-y)) scale(0.2); opacity: 0; }
+}
+
+.animate-fly {
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  border-radius: 50%;
+  animation: fly-to-cart 0.6s cubic-bezier(0.42, 0, 0.58, 1) forwards;
+}
+
+@keyframes pulse-scale {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.animate-pulse-scale {
+  animation: pulse-scale 0.3s ease-out;
 }

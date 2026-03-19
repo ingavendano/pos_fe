@@ -1,15 +1,16 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TenantService, TenantSettings } from '../../../core/services/tenant.service';
+import { ThemeSelectorComponent } from './theme-selector.component';
 
 @Component({
     selector: 'app-tenant-settings-page',
     standalone: true,
-    imports: [CommonModule, FormsModule],
+    imports: [CommonModule, FormsModule, ThemeSelectorComponent],
     templateUrl: './tenant-settings-page.component.html'
 })
-export default class TenantSettingsPageComponent implements OnInit {
+export default class TenantSettingsPageComponent {
     tenantService = inject(TenantService);
 
     isSaving = signal(false);
@@ -27,11 +28,14 @@ export default class TenantSettingsPageComponent implements OnInit {
         giro: ''
     };
 
-    ngOnInit() {
-        const settings = this.tenantService.settings();
-        if (settings) {
-            this.formModel = { ...settings };
-        }
+    constructor() {
+        // Reactively populate the form whenever tenant settings are loaded/updated
+        effect(() => {
+            const settings = this.tenantService.settings();
+            if (settings) {
+                this.formModel = { ...settings };
+            }
+        });
     }
 
     saveSettings() {
@@ -54,3 +58,4 @@ export default class TenantSettingsPageComponent implements OnInit {
         });
     }
 }
+

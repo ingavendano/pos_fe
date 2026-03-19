@@ -1,0 +1,108 @@
+/*
+  themes.css
+  ==========
+  Sistema de temas para el POS multi-tenant.
+  Cada tema se activa añadiendo una clase al <body>:
+    body.theme-indigo     → Tech / genérico (default)
+    body.theme-restaurant → Restaurante / food service
+    body.theme-retail     → Retail / tienda
+    body.theme-premium    → Premium / luxury
+
+  Uso en Angular:
+    document.body.className = `theme-${tenant.theme}`;
+
+  Las variables --color-primary-* se usan en los componentes
+  en lugar de clases Tailwind hardcodeadas como bg-indigo-600.
+*/
+
+/* ── Tema: Índigo (default) ─────────────────────────────────── */
+body, body.theme-indigo {
+  --color-primary-50:   #EEF2FF;
+  --color-primary-100:  #E0E7FF;
+  --color-primary-200:  #C7D2FE;
+  --color-primary-400:  #818CF8;
+  --color-primary-500:  #6366F1;
+  --color-primary-600:  #4F46E5;
+  --color-primary-700:  #4338CA;
+  --color-primary-900:  #1E1B4B;
+
+  --color-sidebar-bg:       #1E1B4B;
+  --color-sidebar-active:   rgba(99, 102, 241, 0.3);
+  --color-sidebar-border:   #818CF8;
+  --color-sidebar-text:     rgba(255, 255, 255, 0.5);
+  --color-sidebar-text-active: #C7D2FE;
+  --color-sidebar-section:  rgba(255, 255, 255, 0.35);
+
+  --color-login-bg:         #F5F3FF;
+  --color-login-card-border:#DDD6FE;
+  --color-login-accent:     #7C3AED;
+}
+
+/* ── Tema: Restaurante ──────────────────────────────────────── */
+body.theme-restaurant {
+  --color-primary-50:   #FFF7ED;
+  --color-primary-100:  #FFEDD5;
+  --color-primary-200:  #FED7AA;
+  --color-primary-400:  #FB923C;
+  --color-primary-500:  #F97316;
+  --color-primary-600:  #DC2626;
+  --color-primary-700:  #B91C1C;
+  --color-primary-900:  #7C1D1D;
+
+  --color-sidebar-bg:       #7C1D1D;
+  --color-sidebar-active:   rgba(220, 38, 38, 0.3);
+  --color-sidebar-border:   #FCA5A5;
+  --color-sidebar-text:     rgba(255, 255, 255, 0.5);
+  --color-sidebar-text-active: #FEE2E2;
+  --color-sidebar-section:  rgba(255, 255, 255, 0.35);
+
+  --color-login-bg:         #FFF7ED;
+  --color-login-card-border:#FED7AA;
+  --color-login-accent:     #EA580C;
+}
+
+/* ── Tema: Retail ───────────────────────────────────────────── */
+body.theme-retail {
+  --color-primary-50:   #F0FDFA;
+  --color-primary-100:  #CCFBF1;
+  --color-primary-200:  #99F6E4;
+  --color-primary-400:  #2DD4BF;
+  --color-primary-500:  #14B8A6;
+  --color-primary-600:  #0D9488;
+  --color-primary-700:  #0F766E;
+  --color-primary-900:  #134E4A;
+
+  --color-sidebar-bg:       #134E4A;
+  --color-sidebar-active:   rgba(13, 148, 136, 0.35);
+  --color-sidebar-border:   #5EEAD4;
+  --color-sidebar-text:     rgba(255, 255, 255, 0.5);
+  --color-sidebar-text-active: #CCFBF1;
+  --color-sidebar-section:  rgba(255, 255, 255, 0.35);
+
+  --color-login-bg:         #F0FDFA;
+  --color-login-card-border:#99F6E4;
+  --color-login-accent:     #0D9488;
+}
+
+/* ── Tema: Premium ──────────────────────────────────────────── */
+body.theme-premium {
+  --color-primary-50:   #FAF5FF;
+  --color-primary-100:  #F3E8FF;
+  --color-primary-200:  #E9D5FF;
+  --color-primary-400:  #C084FC;
+  --color-primary-500:  #A855F7;
+  --color-primary-600:  #9333EA;
+  --color-primary-700:  #7E22CE;
+  --color-primary-900:  #3B0764;
+
+  --color-sidebar-bg:       #1A0533;
+  --color-sidebar-active:   rgba(147, 51, 234, 0.3);
+  --color-sidebar-border:   #C084FC;
+  --color-sidebar-text:     rgba(255, 255, 255, 0.45);
+  --color-sidebar-text-active: #E9D5FF;
+  --color-sidebar-section:  rgba(255, 255, 255, 0.3);
+
+  --color-login-bg:         #FAF5FF;
+  --color-login-card-border:#E9D5FF;
+  --color-login-accent:     #9333EA;
+}

@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CartService } from '../../../core/services/cart.service';
 import { TenantService } from '../../../core/services/tenant.service';
@@ -46,7 +46,15 @@ export class OrderTicketComponent {
   /** Payment method selected by the cashier before charging */
   paymentMethod = signal<'CASH' | 'CARD' | 'TRANSFER'>('CASH');
 
+  totalPulse = signal(false);
+
   constructor() {
+    // Pulse animation trigger
+    effect(() => {
+      this.cartService.orderSummary().grandTotal;
+      this.totalPulse.set(true);
+      setTimeout(() => this.totalPulse.set(false), 300);
+    });
     this.searchSubject.pipe(
       debounceTime(300),
       distinctUntilChanged()

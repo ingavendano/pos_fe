@@ -13,17 +13,18 @@ export interface SetupStatusResponse {
 export class SetupService {
   private http = inject(HttpClient);
   private apiUrl = `${environment.apiUrl}/public/setup`;
+  private setupComplete: boolean | null = null;
 
   // local cache
   private isSetupCompleteCached: boolean | null = null;
 
   checkStatus(): Observable<boolean> {
-    if (this.isSetupCompleteCached !== null) {
-      return of(this.isSetupCompleteCached);
+    if (this.setupComplete !== null) {
+      return of(this.setupComplete);
     }
 
     return this.http.get<SetupStatusResponse>(`${this.apiUrl}/status`).pipe(
-      tap(res => this.isSetupCompleteCached = res.setupComplete),
+      tap(res => this.setupComplete = res.setupComplete),
       map(res => res.setupComplete),
       catchError(() => {
         // default to requires setup if error (maybe server is down, but safer to try setup)

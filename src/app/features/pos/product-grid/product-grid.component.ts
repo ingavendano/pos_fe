@@ -18,7 +18,7 @@ export class ProductGridComponent {
 
   // Use new Angular input() signal function
   products = input.required<Product[]>();
-  productSelected = output<Product>();
+  productSelected = output<{ product: Product, event: MouseEvent }>();
 
   getAvailableStock(product: Product): number {
     const cartItem = this.cartService.items().find(item => item?.product?.id === product?.id);
@@ -29,9 +29,9 @@ export class ProductGridComponent {
     return stock - inCartUnsaved;
   }
 
-  onProductSelect(product: Product) {
+  onProductSelect(product: Product, event: MouseEvent) {
     if (this.getAvailableStock(product) > 0) {
-      this.productSelected.emit(product);
+      this.productSelected.emit({ product, event });
     }
   }
 }

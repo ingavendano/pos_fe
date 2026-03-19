@@ -4,23 +4,32 @@ import {
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { RoleService, RoleResponse, RoleRequest, PermissionResponse } from '../../../core/services/role.service';
+import { MENU_STRUCTURE } from '../../../core/constants/menu-items';
 
-const AVAILABLE_COMPONENTS: { key: string; label: string }[] = [
-    { key: 'DASHBOARD', label: 'Dashboard' },
-    { key: 'POS', label: 'Punto de Venta' },
-    { key: 'INVOICES', label: 'Facturas' },
-    { key: 'PRODUCTS', label: 'Catálogo de Productos' },
-    { key: 'CATEGORIES', label: 'Catálogo de Categorías' },
-    { key: 'BRANCHES', label: 'Sucursales' },
-    { key: 'TABLES', label: 'Mesas' },
-    { key: 'USERS', label: 'Personal / Usuarios' },
-    { key: 'ROLES', label: 'Roles y Permisos' },
-    { key: 'TAXES', label: 'Impuestos y Tasas' },
-    { key: 'CUSTOMERS', label: 'Clientes' },
-    { key: 'REPORTS', label: 'Reportes y Análisis' },
-    { key: 'INVENTORY', label: 'Inventario' },
-    { key: 'SETTINGS', label: 'Ajustes Generales' },
-];
+const FLATTENED_COMPONENTS: { key: string; label: string }[] = [];
+MENU_STRUCTURE.forEach(group => {
+    group.items.forEach(item => {
+        if (item.key && !FLATTENED_COMPONENTS.some(c => c.key === item.key)) {
+            FLATTENED_COMPONENTS.push({ key: item.key, label: item.key === 'SETTINGS' ? 'Ajustes Generales' : item.label });
+        }
+    });
+});
+
+// Any missing ones from the original list that might not be in the sidebar yet?
+const ORIGINAL_KEYS = ['BRANCHES', 'TABLES', 'TAXES', 'CUSTOMERS', 'INVENTORY'];
+ORIGINAL_KEYS.forEach(key => {
+    if (!FLATTENED_COMPONENTS.some(c => c.key === key)) {
+        // Find them in the original list if they were there
+        const labels: any = {
+            'BRANCHES': 'Sucursales',
+            'TABLES': 'Mesas',
+            'TAXES': 'Impuestos y Tasas',
+            'CUSTOMERS': 'Clientes',
+            'INVENTORY': 'Inventario'
+        };
+        FLATTENED_COMPONENTS.push({ key, label: labels[key] || key });
+    }
+});
 
 @Component({
     selector: 'app-roles-page',
@@ -34,7 +43,8 @@ export class RolesPageComponent implements OnInit {
     private fb = inject(FormBuilder);
 
     roles = this.roleService.roles;
-    availableComponents = AVAILABLE_COMPONENTS;
+    menuStructure = MENU_STRUCTURE;
+    availableComponents = FLATTENED_COMPONENTS;
     showModal = signal(false);
     editingRole = signal<RoleResponse | null>(null);
     errorMessage = signal<string | null>(null);
@@ -52,7 +62,7 @@ export class RolesPageComponent implements OnInit {
     }
 
     initForm(role?: RoleResponse): void {
-        const permissionsControls = AVAILABLE_COMPONENTS.map(comp => {
+        const permissionsControls = FLATTENED_COMPONENTS.map(comp => {
             const existing = role?.permissions.find(p => p.component === comp.key);
             return this.fb.group({
                 component: [comp.key],
@@ -120,6 +130,11 @@ export class RolesPageComponent implements OnInit {
     }
 
     getLabelForComponent(key: string): string {
-        return AVAILABLE_COMPONENTS.find(c => c.key === key)?.label ?? key;
+        return FLATTENED_COMPONENTS.find(c => c.key === key)?.label ?? key;
+    }
+
+    getComponentIndex(key: string | undefined): number {
+        if (!key) return -1;
+        return FLATTENED_COMPONENTS.findIndex(c => c.key === key);
     }
 }

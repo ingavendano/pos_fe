@@ -1,310 +1,99 @@
-<aside class="relative flex flex-col h-screen px-4 py-8 bg-white border-r transition-all duration-300 overflow-visible"
-  [class.w-64]="!isCollapsed()" [class.w-20]="isCollapsed()">
+<aside class="relative flex flex-col h-screen px-3 py-6 transition-all duration-300 overflow-visible"
+  [class.w-64]="!isCollapsed()" [class.w-[72px]]="isCollapsed()"
+  style="background: var(--color-sidebar-bg)">
 
-  <!-- Resize Toggle Button -->
-  <button (click)="toggleSidebar()" 
-    class="absolute -right-3 top-9 flex items-center justify-center w-6 h-6 bg-white border border-gray-200 rounded-full shadow-sm hover:bg-gray-50 hover:text-indigo-600 focus:outline-none transition-all z-10 group">
-    <svg class="w-3.5 h-3.5 transition-transform duration-300" [class.rotate-180]="isCollapsed()" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+  <!-- Resize Toggle -->
+  <button (click)="toggleSidebar()"
+    class="absolute -right-3 top-8 flex items-center justify-center w-6 h-6
+           bg-white border border-gray-200 rounded-full shadow-md
+           hover:bg-gray-50 hover:shadow-lg focus:outline-none transition-all z-10">
+    <svg class="w-3 h-3 text-gray-500 transition-transform duration-300"
+         [class.rotate-180]="isCollapsed()"
+         fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" />
     </svg>
   </button>
 
-  <!-- Logo -->
-  <a href="#" class="flex flex-col items-center mb-8 transition-all overflow-hidden">
-    <img src="/Logo3.png" alt="Logo" class="w-12 h-12 object-contain mb-2 flex-shrink-0">
+  <!-- Logo + nombre tenant -->
+  <a href="#" class="flex items-center gap-3 mb-8 px-1 overflow-hidden">
+    <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 shadow-md"
+         style="background: linear-gradient(135deg, var(--color-sidebar-logo-from), var(--color-sidebar-logo-to)); border: 1px solid rgba(255,255,255,0.15)">
+      <svg class="w-5 h-5 text-white drop-shadow-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+      </svg>
+    </div>
     @if (!isCollapsed()) {
-      <span class="text-xl font-bold font-sans text-gray-800 whitespace-nowrap animate-fade-in">{{ tenantModel()?.name || 'SaaS POS' }}</span>
+      <span class="text-sm font-bold text-white whitespace-nowrap animate-fade-in truncate tracking-wide">
+        {{ tenantModel()?.name || 'SaaS POS' }}
+      </span>
     }
   </a>
 
-  <div class="flex flex-col justify-between flex-1 mt-6 overflow-x-hidden overflow-y-auto custom-scrollbar">
-    <nav class="space-y-4">
-      <!-- ── 1. OPERACIÓN DIARIA ── -->
-      @if (hasPermission('POS') || hasPermission('KITCHEN') || hasPermission('INVOICES')) {
-      <div>
-        <button (click)="!isCollapsed() && salesOpen.set(!salesOpen())"
-          [attr.title]="isCollapsed() ? 'Operación' : null"
-          class="flex items-center justify-between w-full px-4 py-2.5 text-gray-700 rounded-xl transition-all hover:bg-gray-50 group">
-          <div class="flex items-center">
-            <div
-              class="p-1.5 rounded-lg bg-indigo-50 text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
-              <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
-            </div>
+  <!-- Nav -->
+  <div class="flex flex-col justify-between flex-1 overflow-x-hidden overflow-y-auto custom-scrollbar">
+    <nav class="space-y-1">
+
+      @for (group of menuStructure; track group.label) {
+        @if (group.items.length > 0) {
+          <div [class.pt-3]="!$first">
+            <!-- Sección header -->
             @if (!isCollapsed()) {
-              <span class="ml-3 font-semibold text-sm whitespace-nowrap animate-fade-in">Operación</span>
+              <p class="px-2 mb-1 text-[10px] font-semibold uppercase tracking-widest"
+                 style="color: var(--color-sidebar-section)">{{ group.label }}</p>
+            }
+
+            @for (item of group.items; track item.label) {
+              @if (hasPermission(item.key || '')) {
+                <a [routerLink]="item.route"
+                  routerLinkActive="sidebar-item-active"
+                  [routerLinkActiveOptions]="item.routerLinkActiveOptions || {exact: true}"
+                  [target]="item.external ? '_blank' : '_self'"
+                  class="sidebar-item flex items-center justify-between px-3 py-2 rounded-lg transition-all"
+                  [attr.title]="isCollapsed() ? item.label : null">
+                  
+                  <div class="flex items-center gap-3">
+                    <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                         style="color: var(--color-sidebar-text)">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        [attr.d]="item.icon" />
+                    </svg>
+                    @if (!isCollapsed()) {
+                      <span class="text-sm whitespace-nowrap animate-fade-in"
+                            style="color: var(--color-sidebar-text)">{{ item.label }}</span>
+                    }
+                  </div>
+
+                  <!-- Special badges/icons -->
+                  @if (!isCollapsed()) {
+                    @if (item.label === 'Caja') {
+                      @if (registerIsOpen()) {
+                        <span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-green-500 text-white">ABI</span>
+                      } @else {
+                        <span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-red-500 text-white">CER</span>
+                      }
+                    }
+                    @if (item.external) {
+                      <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                           style="color: var(--color-sidebar-text)">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                      </svg>
+                    }
+                  }
+                </a>
+              }
             }
           </div>
-          @if (!isCollapsed()) {
-            <svg class="w-4 h-4 text-gray-400 transition-transform duration-200" [class.rotate-180]="salesOpen()"
-              fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-            </svg>
-          }
-        </button>
-
-        @if (salesOpen() && !isCollapsed()) {
-        <div class="mt-1 ml-4 border-l-2 border-indigo-50 pl-3 space-y-1 animate-fade-in-down">
-          @if (hasPermission('POS')) {
-          <a routerLink="/pos"
-            routerLinkActive="text-indigo-600 font-bold border-l-2 border-indigo-600 -ml-[14px] pl-[12px]"
-            [routerLinkActiveOptions]="{exact: false}"
-            class="flex items-center gap-2 px-3 py-2 text-xs font-medium text-gray-500 rounded-md hover:text-indigo-600 hover:bg-indigo-50 transition-all">
-            Mesas y POS
-          </a>
-          <a routerLink="/admin/cash-register"
-            routerLinkActive="text-indigo-600 font-bold border-l-2 border-indigo-600 -ml-[14px] pl-[12px]"
-            class="flex items-center justify-between px-3 py-2 text-xs font-medium text-gray-500 rounded-md hover:text-indigo-600 hover:bg-indigo-50 transition-all">
-            <span>Caja</span>
-            @if (registerIsOpen()) {
-            <span class="text-[9px] bg-green-100 text-green-700 px-1 rounded">ABI</span>
-            } @else {
-            <span class="text-[9px] bg-red-100 text-red-700 px-1 rounded">CER</span>
-            }
-          </a>
-          }
-          @if (hasPermission('KITCHEN')) {
-          <a routerLink="/kitchen" target="_blank"
-            class="flex items-center justify-between px-3 py-2 text-xs font-medium text-gray-500 rounded-md hover:text-indigo-600 hover:bg-indigo-50 transition-all">
-            <span>Cocina</span>
-            <svg class="w-3 h-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-            </svg>
-          </a>
-          }
-          @if (hasPermission('INVOICES')) {
-          <a routerLink="/invoices"
-            routerLinkActive="text-indigo-600 font-bold border-l-2 border-indigo-600 -ml-[14px] pl-[12px]"
-            class="flex items-center gap-2 px-3 py-2 text-xs font-medium text-gray-500 rounded-md hover:text-indigo-600 hover:bg-indigo-50 transition-all">
-            Facturas / Recibos
-          </a>
-          }
-        </div>
         }
-      </div>
-      }
-
-      <!-- ── 2. GESTIÓN Y CATÁLOGO ── -->
-      @if (hasPermission('PRODUCTS') || hasPermission('CATEGORIES') || hasPermission('INVENTORY')) {
-      <div>
-        <button (click)="!isCollapsed() && catalogOpen.set(!catalogOpen())"
-          [attr.title]="isCollapsed() ? 'Gestión' : null"
-          class="flex items-center justify-between w-full px-4 py-2.5 text-gray-700 rounded-xl transition-all hover:bg-gray-50 group">
-          <div class="flex items-center">
-            <div
-              class="p-1.5 rounded-lg bg-blue-50 text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors">
-              <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-              </svg>
-            </div>
-            @if (!isCollapsed()) {
-              <span class="ml-3 font-semibold text-sm whitespace-nowrap animate-fade-in">Gestión</span>
-            }
-          </div>
-          @if (!isCollapsed()) {
-            <svg class="w-4 h-4 text-gray-400 transition-transform duration-200" [class.rotate-180]="catalogOpen()"
-              fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-            </svg>
-          }
-        </button>
-
-        @if (catalogOpen() && !isCollapsed()) {
-        <div class="mt-1 ml-4 border-l-2 border-blue-50 pl-3 space-y-1 animate-fade-in-down">
-          @if (hasPermission('PRODUCTS')) {
-          <a routerLink="/catalog/products"
-            routerLinkActive="text-blue-600 font-bold border-l-2 border-blue-600 -ml-[14px] pl-[12px]"
-            class="flex items-center gap-2 px-3 py-2 text-xs font-medium text-gray-500 rounded-md hover:text-blue-600 hover:bg-blue-50 transition-all">
-            Productos
-          </a>
-          }
-          @if (hasPermission('CATEGORIES')) {
-          <a routerLink="/catalog/categories"
-            routerLinkActive="text-blue-600 font-bold border-l-2 border-blue-600 -ml-[14px] pl-[12px]"
-            class="flex items-center gap-2 px-3 py-2 text-xs font-medium text-gray-500 rounded-md hover:text-blue-600 hover:bg-blue-50 transition-all">
-            Categorías
-          </a>
-          }
-          @if (hasPermission('INVENTORY')) {
-          <a routerLink="/admin/inventory"
-            routerLinkActive="text-blue-600 font-bold border-l-2 border-blue-600 -ml-[14px] pl-[12px]"
-            class="flex items-center justify-between px-3 py-2 text-xs font-medium text-gray-500 rounded-md hover:text-blue-600 hover:bg-blue-50 transition-all">
-            <span>Stock / Insumos</span>
-            @if (lowStockCount() > 0) {
-            <span class="text-[9px] bg-red-100 text-red-700 px-1 rounded font-bold">{{ lowStockCount() }}</span>
-            }
-          </a>
-          }
-        </div>
-        }
-      </div>
-      }
-
-      <!-- ── 3. CLIENTES ── -->
-      @if (hasPermission('CUSTOMERS')) {
-      <div>
-        <a routerLink="/admin/customers" routerLinkActive="bg-orange-50 text-orange-600"
-          [attr.title]="isCollapsed() ? 'Clientes' : null"
-          class="flex items-center justify-between w-full px-4 py-2.5 text-gray-700 rounded-xl transition-all hover:bg-orange-50 group">
-          <div class="flex items-center">
-            <div
-              class="p-1.5 rounded-lg bg-orange-50 text-orange-600 group-hover:bg-orange-600 group-hover:text-white transition-colors"
-              [class.bg-orange-600]="customersOpen()" [class.text-white]="customersOpen()">
-              <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-            </div>
-            @if (!isCollapsed()) {
-              <span class="ml-3 font-semibold text-sm whitespace-nowrap animate-fade-in">Clientes</span>
-            }
-          </div>
-        </a>
-      </div>
-      }
-
-      <!-- ── 4. ADMINISTRACIÓN AVANZADA ── -->
-      @if (hasPermission('DASHBOARD') || hasPermission('REPORTS')) {
-      <div>
-        <button (click)="!isCollapsed() && reportsOpen.set(!reportsOpen())"
-          [attr.title]="isCollapsed() ? 'Reportes' : null"
-          class="flex items-center justify-between w-full px-4 py-2.5 text-gray-700 rounded-xl transition-all hover:bg-gray-50 group">
-          <div class="flex items-center">
-            <div
-              class="p-1.5 rounded-lg bg-green-50 text-green-600 group-hover:bg-green-600 group-hover:text-white transition-colors">
-              <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-              </svg>
-            </div>
-            @if (!isCollapsed()) {
-              <span class="ml-3 font-semibold text-sm whitespace-nowrap animate-fade-in">Reportes</span>
-            }
-          </div>
-          @if (!isCollapsed()) {
-            <svg class="w-4 h-4 text-gray-400 transition-transform duration-200" [class.rotate-180]="reportsOpen()"
-              fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-            </svg>
-          }
-        </button>
-
-        @if (reportsOpen() && !isCollapsed()) {
-        <div class="mt-1 ml-4 border-l-2 border-green-50 pl-3 space-y-1 animate-fade-in-down">
-          @if (hasPermission('DASHBOARD')) {
-          <a routerLink="/admin/dashboard"
-            routerLinkActive="text-green-600 font-bold border-l-2 border-green-600 -ml-[14px] pl-[12px]"
-            class="flex items-center gap-2 px-3 py-2 text-xs font-medium text-gray-500 rounded-md hover:text-green-600 hover:bg-green-50 transition-all">
-            Dashboard
-          </a>
-          }
-          @if (hasPermission('REPORTS')) {
-          <a routerLink="/admin/reports"
-            routerLinkActive="text-green-600 font-bold border-l-2 border-green-600 -ml-[14px] pl-[12px]"
-            class="flex items-center gap-2 px-3 py-2 text-xs font-medium text-gray-500 rounded-md hover:text-green-600 hover:bg-green-50 transition-all">
-            Estadísticas
-          </a>
-          <a routerLink="/admin/expenses"
-            routerLinkActive="text-green-600 font-bold border-l-2 border-green-600 -ml-[14px] pl-[12px]"
-            class="flex items-center gap-2 px-3 py-2 text-xs font-medium text-gray-500 rounded-md hover:text-green-600 hover:bg-green-50 transition-all">
-            Gastos
-          </a>
-          }
-        </div>
-        }
-      </div>
-      }
-
-      <!-- ── 5. CONFIGURACIÓN ── -->
-      @if (hasPermission('SETTINGS') || hasPermission('BRANCHES') || hasPermission('TABLES') || hasPermission('USERS')
-      || hasPermission('ROLES') || hasPermission('TAXES')) {
-      <div class="pt-4 border-t border-gray-100">
-        <button (click)="!isCollapsed() && adminOpen.set(!adminOpen())"
-          [attr.title]="isCollapsed() ? 'Ajustes' : null"
-          class="flex items-center justify-between w-full px-4 py-2.5 text-gray-700 rounded-xl transition-all hover:bg-gray-50 group">
-          <div class="flex items-center">
-            <div
-              class="p-1.5 rounded-lg bg-gray-100 text-gray-600 group-hover:bg-gray-800 group-hover:text-white transition-colors">
-              <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-            </div>
-            @if (!isCollapsed()) {
-              <span class="ml-3 font-semibold text-sm text-gray-600 whitespace-nowrap animate-fade-in">Ajustes</span>
-            }
-          </div>
-          @if (!isCollapsed()) {
-            <svg class="w-4 h-4 text-gray-400 transition-transform duration-200" [class.rotate-180]="adminOpen()"
-              fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-            </svg>
-          }
-        </button>
-
-        @if (adminOpen() && !isCollapsed()) {
-        <div class="mt-1 ml-4 border-l-2 border-gray-100 pl-3 space-y-1 animate-fade-in-down">
-          @if (hasPermission('SETTINGS')) {
-          <a routerLink="/admin/settings"
-            routerLinkActive="text-gray-900 font-bold border-l-2 border-gray-900 -ml-[14px] pl-[12px]"
-            class="flex items-center gap-2 px-3 py-2 text-xs font-medium text-gray-500 rounded-md hover:text-gray-900 hover:bg-gray-50 transition-all">
-            Empresa
-          </a>
-          }
-          @if (hasPermission('BRANCHES')) {
-          <a routerLink="/admin/branches"
-            routerLinkActive="text-gray-900 font-bold border-l-2 border-gray-900 -ml-[14px] pl-[12px]"
-            class="flex items-center gap-2 px-3 py-2 text-xs font-medium text-gray-500 rounded-md hover:text-gray-900 hover:bg-gray-50 transition-all">
-            Sucursales
-          </a>
-          }
-          @if (hasPermission('TABLES')) {
-          <a routerLink="/admin/tables"
-            routerLinkActive="text-gray-900 font-bold border-l-2 border-gray-900 -ml-[14px] pl-[12px]"
-            class="flex items-center gap-2 px-3 py-2 text-xs font-medium text-gray-500 rounded-md hover:text-gray-900 hover:bg-gray-50 transition-all">
-            Configurar Mesas
-          </a>
-          }
-          @if (hasPermission('USERS')) {
-          <a routerLink="/admin/users"
-            routerLinkActive="text-gray-900 font-bold border-l-2 border-gray-900 -ml-[14px] pl-[12px]"
-            class="flex items-center gap-2 px-3 py-2 text-xs font-medium text-gray-500 rounded-md hover:text-gray-900 hover:bg-gray-50 transition-all">
-            Personal
-          </a>
-          }
-          @if (hasPermission('ROLES')) {
-          <a routerLink="/admin/roles"
-            routerLinkActive="text-gray-900 font-bold border-l-2 border-gray-900 -ml-[14px] pl-[12px]"
-            class="flex items-center gap-2 px-3 py-2 text-xs font-medium text-gray-500 rounded-md hover:text-gray-900 hover:bg-gray-50 transition-all">
-            Roles y Permisos
-          </a>
-          }
-          @if (hasPermission('TAXES')) {
-          <a routerLink="/admin/taxes"
-            routerLinkActive="text-gray-900 font-bold border-l-2 border-gray-900 -ml-[14px] pl-[12px]"
-            class="flex items-center gap-2 px-3 py-2 text-xs font-medium text-gray-500 rounded-md hover:text-gray-900 hover:bg-gray-50 transition-all">
-            Impuestos
-          </a>
-          }
-        </div>
-        }
-      </div>
       }
     </nav>
 
-    <div class="mt-auto pt-8">
-      <div class="px-4 py-3 text-center transition-all overflow-hidden">
-        <p class="text-[10px] font-medium text-gray-400 whitespace-nowrap">v{{ version }}</p>
-        @if (!isCollapsed()) {
-          <p class="text-[10px] text-gray-300 mt-0.5 whitespace-nowrap animate-fade-in">SaaS POS System</p>
-        }
-      </div>
+    <!-- Versión -->
+    <div class="mt-auto pt-6 px-2">
+      <p class="text-[10px] text-center" style="color: var(--color-sidebar-section)">
+        v{{ version }}
+      </p>
     </div>
   </div>
 </aside>

@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TableService } from '../../../core/services/table.service';
 import { RestaurantTable } from '../../../core/api/model';

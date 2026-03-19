@@ -75,6 +75,13 @@
                     </div>
                 </section>
 
+                <!-- Tema visual -->
+                <section>
+                    <h2 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4 border-b pb-2">
+                        Apariencia</h2>
+                    <app-theme-selector></app-theme-selector>
+                </section>
+
                 <!-- Moneda -->
                 <section>
                     <h2 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4 border-b pb-2">
@@ -99,7 +106,8 @@
                 <!-- Footer / Actions -->
                 <div class="pt-6 border-t flex justify-end">
                     <button type="submit" [disabled]="isSaving() || !tenantForm.valid"
-                        class="px-8 py-3 bg-indigo-600 text-white rounded-xl font-semibold shadow-lg shadow-indigo-200 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center">
+                        class="px-8 py-3 text-white rounded-xl font-semibold shadow-lg hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center"
+                        style="background: var(--color-primary-600); box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.2);">
                         @if (isSaving()) {
                         <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">

@@ -1,4 +1,4 @@
-import { Injectable, signal, inject } from '@angular/core';
+import { Injectable, signal, inject, effect } from '@angular/core';
 
 export interface TenantSettings {
     id: number;
@@ -26,16 +26,23 @@ export class TenantService {
     settings = signal<TenantSettings | null>(null);
 
     constructor() {
-        this.loadTenantSettings();
+        // Reactively re-load tenant settings whenever the current user changes.
+        // This handles:
+        //   1. Restoring session from localStorage (user available on startup)
+        //   2. Logging in (user changes from null → user)
+        //   3. Logging out (user changes to null → clear settings)
+        effect(() => {
+            const user = this.auth.currentUser();
+            if (user?.tenantId) {
+                this.loadTenantSettings(user.tenantId);
+            } else {
+                this.settings.set(null);
+            }
+        });
     }
 
-    private loadTenantSettings() {
-        const user = this.auth.currentUser();
-        if (!user || !user.tenantId) {
-            return;
-        }
-
-        this.http.get<TenantSettings>(`${environment.apiUrl}/tenants/${user.tenantId}`).subscribe({
+    private loadTenantSettings(tenantId: number) {
+        this.http.get<TenantSettings>(`${environment.apiUrl}/tenants/${tenantId}`).subscribe({
             next: (data) => this.settings.set(data),
             error: (err) => console.error('Error loading tenant settings', err)
         });
@@ -51,3 +58,4 @@ export class TenantService {
         return this.settings()?.currency || 'USD';
     }
 }
+

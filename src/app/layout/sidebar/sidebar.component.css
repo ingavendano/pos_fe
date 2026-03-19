@@ -1,0 +1,31 @@
+/*
+  sidebar.component.css
+  Estilos del sidebar que dependen de variables de tema.
+  Las clases .sidebar-item y .sidebar-item-active usan var(--color-sidebar-*)
+  definidas en themes.css, así cambian automáticamente con el tema.
+*/
+
+.sidebar-item {
+  color: var(--color-sidebar-text);
+}
+
+.sidebar-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.sidebar-item:hover svg,
+.sidebar-item:hover span {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+/* Estado activo — aplicado por routerLinkActive */
+.sidebar-item-active {
+  background: var(--color-sidebar-active) !important;
+  border-left: 2px solid var(--color-sidebar-border);
+  padding-left: calc(0.75rem - 2px); /* compensa el border-left */
+}
+
+.sidebar-item-active svg,
+.sidebar-item-active span {
+  color: var(--color-sidebar-text-active) !important;
+}

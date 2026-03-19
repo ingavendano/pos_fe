@@ -7,12 +7,14 @@ import { Inventory } from '../../core/api/model';
 import packageJson from '../../../../package.json';
 import { TenantService, TenantSettings } from '../../core/services/tenant.service';
 import { SidebarService } from '../../core/services/sidebar.service';
+import { MENU_STRUCTURE } from '../../core/constants/menu-items';
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
   imports: [RouterLink, RouterLinkActive],
-  templateUrl: './sidebar.component.html'
+  templateUrl: './sidebar.component.html',
+  styleUrls: ['./sidebar.component.css']
 })
 export class SidebarComponent implements OnInit {
   private cashRegisterService = inject(CashRegisterService);
@@ -25,13 +27,8 @@ export class SidebarComponent implements OnInit {
 
 
   // Grupos del Sidebar
-  salesOpen = signal(true);
-  catalogOpen = signal(false);
-  customersOpen = signal(false);
-  inventoryOpen = signal(false);
-  adminOpen = signal(false);
-  reportsOpen = signal(false);
-
+  menuStructure = MENU_STRUCTURE;
+  
   lowStockCount = signal(0);
   version = packageJson.version;
 

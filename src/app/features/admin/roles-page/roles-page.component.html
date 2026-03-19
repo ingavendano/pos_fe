@@ -164,24 +164,34 @@
                                 </tr>
                             </thead>
                             <tbody formArrayName="permissions" class="divide-y divide-gray-50">
-                                @for (ctrl of permissionsArray.controls; track $index; let i = $index) {
-                                <tr [formGroupName]="i" class="hover:bg-gray-50 transition-colors">
-                                    <td class="px-4 py-3 font-medium text-gray-700">
-                                        {{ availableComponents[i].label }}
-                                    </td>
-                                    <td class="px-4 py-3 text-center">
-                                        <input type="checkbox" formControlName="canRead"
-                                            class="w-4 h-4 accent-indigo-600 cursor-pointer" />
-                                    </td>
-                                    <td class="px-4 py-3 text-center">
-                                        <input type="checkbox" formControlName="canWrite"
-                                            class="w-4 h-4 accent-indigo-600 cursor-pointer" />
-                                    </td>
-                                    <td class="px-4 py-3 text-center">
-                                        <input type="checkbox" formControlName="canDelete"
-                                            class="w-4 h-4 accent-indigo-600 cursor-pointer" />
-                                    </td>
-                                </tr>
+                                @for (group of menuStructure; track group.label) {
+                                    <tr class="bg-indigo-50/30">
+                                        <td colspan="4" class="px-4 py-2 font-bold text-indigo-700 text-[10px] uppercase tracking-wider">
+                                            {{ group.label }}
+                                        </td>
+                                    </tr>
+                                    @for (item of group.items; track item.label) {
+                                        @let idx = getComponentIndex(item.key);
+                                        @if (idx !== -1) {
+                                            <tr [formGroupName]="idx" class="hover:bg-gray-50 transition-colors">
+                                                <td class="pl-8 pr-4 py-3 font-medium text-gray-700">
+                                                    {{ item.label }}
+                                                </td>
+                                                <td class="px-4 py-3 text-center">
+                                                    <input type="checkbox" formControlName="canRead"
+                                                        class="w-4 h-4 accent-indigo-600 cursor-pointer" />
+                                                </td>
+                                                <td class="px-4 py-3 text-center">
+                                                    <input type="checkbox" formControlName="canWrite"
+                                                        class="w-4 h-4 accent-indigo-600 cursor-pointer" />
+                                                </td>
+                                                <td class="px-4 py-3 text-center">
+                                                    <input type="checkbox" formControlName="canDelete"
+                                                        class="w-4 h-4 accent-indigo-600 cursor-pointer" />
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
                                 }
                             </tbody>
                         </table>

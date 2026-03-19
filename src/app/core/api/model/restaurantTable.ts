@@ -15,6 +15,8 @@ export interface RestaurantTable {
     number?: number;
     status?: string;
     capacity?: number;
+    posX?: number;
+    posY?: number;
     branch?: Branch;
 }
 

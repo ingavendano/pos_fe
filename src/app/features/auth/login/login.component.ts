@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -8,14 +8,32 @@ import { AuthService } from '../../../core/services/auth.service';
     selector: 'app-login',
     standalone: true,
     imports: [CommonModule, ReactiveFormsModule],
-    templateUrl: './login.component.html'
+    templateUrl: './login.component.html',
+    styles: [`
+      .login-input {
+        border-color: #d1d5db;
+      }
+      .login-input:focus {
+        box-shadow: 0 0 0 2px var(--color-primary-600);
+        border-color: var(--color-primary-600);
+      }
+    `]
 })
 export class LoginComponent {
     private fb = inject(FormBuilder);
-    private authService = inject(AuthService);
+    authService = inject(AuthService);
     private router = inject(Router);
 
     tenantInfo = this.authService.tenantInfo;
+    domainRegistered = this.authService.domainRegistered;
+
+    /** Subdominio a mostrar: viene del tenant o fallback al host actual. */
+    subdomain = computed(() => {
+        const info = this.authService.tenantInfo();
+        if (info?.domain) return info.domain;
+        if (typeof window !== 'undefined') return window.location.hostname;
+        return '';
+    });
 
     loginForm = this.fb.group({
         username: ['', Validators.required],
