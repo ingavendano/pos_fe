@@ -2,11 +2,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://tupos-api.onrender.com/api/:path*"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
+      "destination": "http://146.235.238.78:8081/api/:path*"
     }
   ]
 }

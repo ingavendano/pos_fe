@@ -17,35 +17,35 @@
 
 /* ── Tema: Índigo (default) ─────────────────────────────────── */
 body, body.theme-indigo {
-  --color-primary-50:   #EEF2FF;
-  --color-primary-100:  #E0E7FF;
-  --color-primary-200:  #C7D2FE;
-  --color-primary-400:  #818CF8;
-  --color-primary-500:  #6366F1;
-  --color-primary-600:  #4F46E5;
-  --color-primary-700:  #4338CA;
+  --color-primary-50:   #F5F8FF;
+  --color-primary-100:  #EBEFFF;
+  --color-primary-200:  #D6DBFF;
+  --color-primary-400:  #858DFF;
+  --color-primary-500:  #635BFF; /* Stripe Blue */
+  --color-primary-600:  #5346E0;
+  --color-primary-700:  #4438CA;
   --color-primary-900:  #1E1B4B;
 
-  --color-sidebar-bg:       #1E1B4B;
-  --color-sidebar-active:   rgba(99, 102, 241, 0.3);
-  --color-sidebar-border:   #818CF8;
-  --color-sidebar-text:     rgba(255, 255, 255, 0.5);
-  --color-sidebar-text-active: #C7D2FE;
-  --color-sidebar-section:  rgba(255, 255, 255, 0.35);
-  --color-sidebar-logo-from: #4F46E5;
-  --color-sidebar-logo-to:   #7C3AED;
+  --color-sidebar-bg:       #FFFFFF;
+  --color-sidebar-active:   #F3F4F6;
+  --color-sidebar-border:   #E5E7EB;
+  --color-sidebar-text:     #4B5563;
+  --color-sidebar-text-active: #111827;
+  --color-sidebar-section:  #9CA3AF;
+  --color-sidebar-logo-from: #635BFF;
+  --color-sidebar-logo-to:   #9333EA;
 
-  --color-login-bg:         #F5F3FF;
-  --color-login-bg-from:    #4F46E5;
-  --color-login-bg-to:      #7C3AED;
-  --color-login-card-border:#DDD6FE;
-  --color-login-accent:     #7C3AED;
+  --color-login-bg:         #FFFFFF;
+  --color-login-bg-from:    #000000;
+  --color-login-bg-to:      #444444;
+  --color-login-card-border:#E5E7EB;
+  --color-login-accent:     #000000;
 
-  --color-accent-text:      #4F46E5;
-  --color-accent-bg-light:  #EEF2FF;
-  --color-accent-ring:      rgba(99, 102, 241, 0.25);
+  --color-accent-text:      #635BFF;
+  --color-accent-bg-light:  #F5F8FF;
+  --color-accent-ring:      rgba(99, 91, 255, 0.15);
   --color-table-available:  #10B981;
-  --color-card-hover-border:#818CF8;
+  --color-card-hover-border:#D1D5DB;
 }
 
 /* ── Tema: Restaurante ──────────────────────────────────────── */

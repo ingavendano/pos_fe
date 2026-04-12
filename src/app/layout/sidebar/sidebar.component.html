@@ -1,13 +1,13 @@
-<aside class="relative flex flex-col h-screen px-3 py-6 transition-all duration-300 overflow-visible"
-  [class.w-64]="!isCollapsed()" [class.w-[72px]]="isCollapsed()"
-  style="background: var(--color-sidebar-bg)">
+<aside class="relative flex flex-col h-screen px-4 py-8 transition-all duration-500 overflow-visible border-r glass"
+  [class.w-72]="!isCollapsed()" [class.w-[84px]]="isCollapsed()"
+  style="border-color: var(--color-sidebar-border); border-radius: 0 24px 24px 0">
 
   <!-- Resize Toggle -->
   <button (click)="toggleSidebar()"
-    class="absolute -right-3 top-8 flex items-center justify-center w-6 h-6
-           bg-white border border-gray-200 rounded-full shadow-md
-           hover:bg-gray-50 hover:shadow-lg focus:outline-none transition-all z-10">
-    <svg class="w-3 h-3 text-gray-500 transition-transform duration-300"
+    class="absolute -right-3 top-9 flex items-center justify-center w-6 h-6
+           bg-white border border-gray-100 rounded-full shadow-sm
+           hover:shadow-md focus:outline-none transition-all z-10">
+    <svg class="w-3.5 h-3.5 text-gray-400 transition-transform duration-300"
          [class.rotate-180]="isCollapsed()"
          fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" />
@@ -15,20 +15,23 @@
   </button>
 
   <!-- Logo + nombre tenant -->
-  <a href="#" class="flex items-center gap-3 mb-8 px-1 overflow-hidden">
-    <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 shadow-md"
-         style="background: linear-gradient(135deg, var(--color-sidebar-logo-from), var(--color-sidebar-logo-to)); border: 1px solid rgba(255,255,255,0.15)">
-      <svg class="w-5 h-5 text-white drop-shadow-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+  <div class="flex items-center gap-3.5 mb-10 px-1 overflow-hidden">
+    <div class="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-premium border border-white/10"
+         style="background: linear-gradient(135deg, var(--color-sidebar-logo-from), var(--color-sidebar-logo-to))">
+      <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
           d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
       </svg>
     </div>
     @if (!isCollapsed()) {
-      <span class="text-sm font-bold text-white whitespace-nowrap animate-fade-in truncate tracking-wide">
-        {{ tenantModel()?.name || 'SaaS POS' }}
-      </span>
+      <div class="flex flex-col animate-fade-in truncate">
+        <span class="text-sm font-bold text-gray-900 tracking-tight leading-none">
+          {{ tenantModel()?.name || 'SaaS POS' }}
+        </span>
+        <span class="text-[10px] text-gray-400 font-medium mt-1">Enterprise Plan</span>
+      </div>
     }
-  </a>
+  </div>
 
   <!-- Nav -->
   <div class="flex flex-col justify-between flex-1 overflow-x-hidden overflow-y-auto custom-scrollbar">
@@ -37,30 +40,26 @@
       @for (group of menuStructure; track group.label) {
         @if (group.items.length > 0) {
           <div [class.pt-3]="!$first">
-            <!-- Sección header -->
             @if (!isCollapsed()) {
-              <p class="px-2 mb-1 text-[10px] font-semibold uppercase tracking-widest"
-                 style="color: var(--color-sidebar-section)">{{ group.label }}</p>
+              <p class="sidebar-section-header">{{ group.label }}</p>
             }
 
             @for (item of group.items; track item.label) {
-              @if (hasPermission(item.key || '')) {
+              @if (hasPermission(item)) {
                 <a [routerLink]="item.route"
-                  routerLinkActive="sidebar-item-active"
-                  [routerLinkActiveOptions]="item.routerLinkActiveOptions || {exact: true}"
-                  [target]="item.external ? '_blank' : '_self'"
-                  class="sidebar-item flex items-center justify-between px-3 py-2 rounded-lg transition-all"
-                  [attr.title]="isCollapsed() ? item.label : null">
+                   routerLinkActive="sidebar-item-active"
+                   [routerLinkActiveOptions]="item.routerLinkActiveOptions || {exact: true}"
+                   [target]="item.external ? '_blank' : '_self'"
+                   class="sidebar-item flex items-center justify-between px-4 py-3 rounded-2xl transition-all duration-300 hover:translate-x-1"
+                   [attr.title]="isCollapsed() ? item.label : null">
                   
                   <div class="flex items-center gap-3">
-                    <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                         style="color: var(--color-sidebar-text)">
+                    <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         [attr.d]="item.icon" />
                     </svg>
                     @if (!isCollapsed()) {
-                      <span class="text-sm whitespace-nowrap animate-fade-in"
-                            style="color: var(--color-sidebar-text)">{{ item.label }}</span>
+                      <span class="text-sm whitespace-nowrap animate-fade-in">{{ item.label }}</span>
                     }
                   </div>
 
@@ -74,8 +73,7 @@
                       }
                     }
                     @if (item.external) {
-                      <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                           style="color: var(--color-sidebar-text)">
+                      <svg class="w-3.5 h-3.5 flex-shrink-0 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                           d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                       </svg>
@@ -90,8 +88,8 @@
     </nav>
 
     <!-- Versión -->
-    <div class="mt-auto pt-6 px-2">
-      <p class="text-[10px] text-center" style="color: var(--color-sidebar-section)">
+    <div class="mt-auto pt-6 px-2 border-t border-gray-100/50">
+      <p class="text-[10px] text-center font-medium text-gray-400">
         v{{ version }}
       </p>
     </div>

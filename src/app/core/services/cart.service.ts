@@ -1,5 +1,4 @@
 import { Injectable, computed, signal, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { CartItem, OrderSummary } from '../models/pos.models';
 import { Product } from '../api/model';
 import { TaxService } from './tax.service';
@@ -16,7 +15,6 @@ import { Customer } from './customer.service';
     providedIn: 'root'
 })
 export class CartService {
-    private http = inject(HttpClient);
     private taxService = inject(TaxService);
     private authService = inject(AuthService);
     private tableService = inject(TableService);
@@ -133,7 +131,6 @@ export class CartService {
         };
     });
 
-    private readonly API_URL = `${environment.apiUrl}/orders`;
 
     addItem(product: Product, quantity: number = 1, notes?: string) {
         this.items.update(currentItems => {
@@ -201,7 +198,7 @@ export class CartService {
         this.selectedCustomer.set(null);
     }
 
-    checkout(isPaid: boolean, paymentMethod: 'CASH' | 'CARD' | 'TRANSFER' = 'CASH'): Observable<any> {
+    getOrderPayload() {
         const activeTable = this.tableService.activeTable();
         const currentUser = this.authService.currentUser();
         const summary = this.orderSummary();
@@ -210,45 +207,25 @@ export class CartService {
             throw new Error("Faltan datos requeridos (mesa, usuario o sucursal) para procesar la orden.");
         }
 
-        const url = `${this.API_URL}/branch/${currentUser.branchId}/table/${activeTable.id}/user/${currentUser.id}`;
-
-        const orderId = this.activeOrderId();
-        const payload = {
+        return {
             total: summary.grandTotal,
             discountType: this.discountType() !== 'NONE' ? this.discountType() : null,
             discountValue: this.discountValue() > 0 ? this.discountValue() : null,
-            customer: this.selectedCustomer() ? { id: this.selectedCustomer()?.id } : null,
-            // Construimos la lista de OrderItem
-            items: this.items().map(item => ({
-                product: { id: item.product.id }, // Solo enviamos el ID del producto
-                quantity: item.quantity,
-                unitPrice: item.product.price,
-                subtotal: item.subtotal,
-                notes: item.notes
+            customerId: this.selectedCustomer() ? this.selectedCustomer()?.id as number : null,
+            items: this.items().map((item: any) => ({
+                productId: item.product.id as number,
+                quantity: item.quantity as number,
+                unitPrice: item.product.price as number,
+                subtotal: item.subtotal as number,
+                notes: item.notes as string | undefined
             }))
         };
-
-        const request$ = orderId
-            ? this.http.put<any>(`${this.API_URL}/${orderId}`, payload)
-            : this.http.post<any>(url, payload);
-
-        return request$.pipe(
-            switchMap(order => {
-                if (isPaid) {
-                    return this.http.patch<any>(
-                        `${this.API_URL}/${order.id}/status`, { status: 'PAID', paymentMethod }
-                    );
-                }
-                return of(order);
-            }),
-            tap(() => {
-                this.clearCart();
-                this.tableService.clearSelection();
-                // Optionally reload tables here to update status to OCUPIED/AVAILABLE
-                this.tableService.loadTables();
-                // Reload catalogue to update product stock
-                this.catalogueService.loadCatalogue();
-            })
-        );
+    }
+    
+    postCheckoutCleanup() {
+        this.clearCart();
+        this.tableService.clearSelection();
+        this.tableService.loadTables();
+        this.catalogueService.loadCatalogue();
     }
 }

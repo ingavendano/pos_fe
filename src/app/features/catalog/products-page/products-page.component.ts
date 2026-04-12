@@ -5,6 +5,7 @@ import { CatalogueService } from '../../../core/services/catalogue.service';
 import { Product, Category } from '../../../core/api/model';
 import { RecipeManagementComponent } from '../recipe-management/recipe-management.component';
 import { AuthService } from '../../../core/services/auth.service';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-products-page',
@@ -45,6 +46,21 @@ export default class ProductsPageComponent implements OnInit {
     isSellable: true
   };
 
+  availableImages = [
+    'Logo1.png',
+    'corona-extra_14902664704338_t.jpg',
+    'golden_15126613280998_t.jpg',
+    'heineken-lager-beer_15417670066809_t.jpg',
+    'modelo-especial-17388939929557-g.jpg',
+    'pilsener_15126611804035_t.jpg',
+    'regia-extra_15126614369128_t.jpg',
+    'suprema_15126609216835_t.jpg'
+  ];
+
+  selectImage(img: string) {
+    this.productForm.imageUrl = '/' + img;
+  }
+
   filteredProducts = computed(() => {
     const term = this.searchTerm().toLowerCase();
     const filterCatId = this.filterCategoryId();
@@ -74,33 +90,34 @@ export default class ProductsPageComponent implements OnInit {
   }
 
   isFormValid(): boolean {
-    return !!this.productForm.name &&
-      this.productForm.price >= 0 &&
-      this.productForm.categoryId !== null &&
-      this.productForm.quantity !== null && this.productForm.quantity >= 0 &&
-      this.productForm.minStock !== null && this.productForm.minStock >= 0;
+    const f = this.productForm;
+    return !!f.name && 
+           f.price != null && f.price >= 0 && 
+           f.categoryId != null && 
+           f.quantity != null && f.quantity >= 0 &&
+           f.minStock != null && f.minStock >= 0;
   }
 
   openModal(product: Product | null = null) {
     this.editingProduct.set(product);
     if (product) {
       this.productForm = {
-        name: product.name ?? '',
-        description: product.description ?? '',
+        name: product.name || '',
+        description: product.description || '',
         price: product.price ?? 0,
         categoryId: product.category?.id ?? null,
-        isAvailable: product.isAvailable ?? true,
+        isAvailable: product.isAvailable !== false,
         quantity: product.quantity ?? 0,
         minStock: product.minStock ?? 0,
-        imageUrl: product.imageUrl ?? '',
-        isSellable: product.isSellable ?? true
+        imageUrl: product.imageUrl || '',
+        isSellable: product.isSellable !== false
       };
     } else {
       this.productForm = {
         name: '',
         description: '',
         price: 0,
-        categoryId: null,
+        categoryId: this.catalogueService.getCategories()[0]?.id ?? null,
         isAvailable: true,
         quantity: 0,
         minStock: 0,
@@ -142,7 +159,9 @@ export default class ProductsPageComponent implements OnInit {
       return;
     }
 
-    request$.subscribe({
+    request$.pipe(
+      finalize(() => this.isSaving.set(false))
+    ).subscribe({
       next: () => {
         this.catalogueService.loadCatalogue();
         this.closeModal();
@@ -150,9 +169,6 @@ export default class ProductsPageComponent implements OnInit {
       error: (err) => {
         console.error('Error saving product', err);
         alert('Ocurrió un error al guardar el producto.');
-      },
-      complete: () => {
-        this.isSaving.set(false);
       }
     });
   }
@@ -191,7 +207,10 @@ export default class ProductsPageComponent implements OnInit {
     if (!product || this.restockQuantity <= 0) return;
 
     this.isSaving.set(true);
-    this.catalogueService.restockProduct(product.id || 0, this.restockQuantity).subscribe({
+    this.catalogueService.restockProduct(product.id || 0, this.restockQuantity)
+    .pipe(
+      finalize(() => this.isSaving.set(false))
+    ).subscribe({
       next: () => {
         this.catalogueService.loadCatalogue();
         this.closeRestockModal();
@@ -199,9 +218,6 @@ export default class ProductsPageComponent implements OnInit {
       error: (err) => {
         console.error('Error restocking product', err);
         alert('Ocurrió un error al reabastecer el producto.');
-      },
-      complete: () => {
-        this.isSaving.set(false);
       }
     });
   }

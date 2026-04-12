@@ -1,4 +1,5 @@
 import { Injectable, inject, signal, OnDestroy } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { AuthService } from './auth.service';
 import { environment } from '../../../environments/environment';
 
@@ -11,6 +12,7 @@ export interface AppNotification {
 
 @Injectable({ providedIn: 'root' })
 export class NotificationService implements OnDestroy {
+    private http = inject(HttpClient);
     private authService = inject(AuthService);
     private eventSource: EventSource | null = null;
     private idCounter = 0;
@@ -22,8 +24,23 @@ export class NotificationService implements OnDestroy {
         const token = this.authService.getToken();
         if (!tenantId || this.eventSource || !token) return;
 
-        const url = `${environment.apiUrl}/notifications/stream/tenant/${tenantId}?token=${token}`;
-        this.eventSource = new EventSource(url, { withCredentials: false });
+        // Pedimos un token SSE de vida corta para no exponer el access token real en querystring.
+        this.http.get<{ token: string }>(`${environment.apiUrl}/notifications/stream/token?tenantId=${tenantId}`)
+            .subscribe({
+                next: ({ token: sseToken }) => {
+                    const url = `${environment.apiUrl}/notifications/stream/tenant/${tenantId}?token=${encodeURIComponent(sseToken)}`;
+                    this.eventSource = new EventSource(url, { withCredentials: false });
+                    this.bindListeners();
+                },
+                error: () => {
+                    // Reintentar silencioso después de 10s
+                    setTimeout(() => this.connect(), 10_000);
+                }
+            });
+    }
+
+    private bindListeners(): void {
+        if (!this.eventSource) return;
 
         const handleEvent = (type: string) => (event: MessageEvent) => {
             let message = event.data;

@@ -1,7 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { tap, catchError } from 'rxjs/operators';
+import { tap, catchError, finalize, shareReplay } from 'rxjs/operators';
 import { Observable, throwError, of } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { ThemeService } from './theme/theme.service';
@@ -34,6 +34,7 @@ export interface AuthResponse {
     branchId?: number;
     branchName?: string;
     permissions: PermissionResponse[];
+    features?: string[];
 }
 
 @Injectable({
@@ -51,9 +52,20 @@ export class AuthService {
     private readonly API_URL = `${environment.apiUrl}/auth`;
     private readonly TOKEN_KEY = 'pos_auth_token';
     private readonly USER_KEY = 'pos_auth_user';
+    private readonly REFRESH_KEY = 'pos_auth_refresh_token';
 
     // Evita llamadas concurrentes a /me si ya hay una en vuelo
     private refreshingPermissions = false;
+    private refreshInFlight: Observable<AuthResponse> | null = null;
+
+    private normalizeRole(role: string | null | undefined): string {
+        if (!role) return '';
+        return role.toUpperCase().replace(/^ROLE_/, '');
+    }
+
+    private isAdmin(user: AuthResponse | null): boolean {
+        return this.normalizeRole(user?.role) === 'ADMIN';
+    }
 
     constructor() {
         this.loadUserFromStorage();
@@ -93,6 +105,7 @@ export class AuthService {
     logout(): void {
         localStorage.removeItem(this.TOKEN_KEY);
         localStorage.removeItem(this.USER_KEY);
+        localStorage.removeItem(this.REFRESH_KEY);
         this.currentUser.set(null);
         this.router.navigate(['/login']);
     }
@@ -132,7 +145,39 @@ export class AuthService {
     private saveAuthData(authResponse: AuthResponse): void {
         localStorage.setItem(this.TOKEN_KEY, authResponse.token);
         localStorage.setItem(this.USER_KEY, JSON.stringify(authResponse));
+        if (authResponse.refreshToken) {
+            localStorage.setItem(this.REFRESH_KEY, authResponse.refreshToken);
+        }
         this.currentUser.set(authResponse);
+    }
+
+    getRefreshToken(): string | null {
+        return this.currentUser()?.refreshToken ?? localStorage.getItem(this.REFRESH_KEY);
+    }
+
+    /**
+     * Interceptor support: rota el access token usando refreshToken y devuelve el AuthResponse actualizado.
+     * Si hay múltiples requests con 401 simultáneos, se deduplica con refreshInFlight.
+     */
+    refreshAccessToken(): Observable<AuthResponse> {
+        if (this.refreshInFlight) return this.refreshInFlight;
+
+        const refreshToken = this.getRefreshToken();
+        if (!refreshToken) {
+            return throwError(() => new Error('No refresh token available'));
+        }
+
+        this.refreshInFlight = this.http
+            .post<AuthResponse>(`${this.API_URL}/refresh`, { refreshToken })
+            .pipe(
+                tap((fresh) => this.saveAuthData(fresh)),
+                finalize(() => {
+                    this.refreshInFlight = null;
+                }),
+                shareReplay(1)
+            );
+
+        return this.refreshInFlight;
     }
 
     private loadUserFromStorage(): void {
@@ -155,7 +200,7 @@ export class AuthService {
     hasPermission(component: string): boolean {
         const user = this.currentUser();
         if (!user) return false;
-        if (user.role?.toUpperCase() === 'ADMIN') return true;
+        if (this.isAdmin(user)) return true;
         const permission = user.permissions?.find(p => p.component === component);
         return permission ? permission.canRead : false;
     }
@@ -163,7 +208,7 @@ export class AuthService {
     hasWritePermission(component: string): boolean {
         const user = this.currentUser();
         if (!user) return false;
-        if (user.role?.toUpperCase() === 'ADMIN') return true;
+        if (this.isAdmin(user)) return true;
         const permission = user.permissions?.find(p => p.component === component);
         return permission ? permission.canWrite : false;
     }
@@ -171,13 +216,21 @@ export class AuthService {
     hasDeletePermission(component: string): boolean {
         const user = this.currentUser();
         if (!user) return false;
-        if (user.role?.toUpperCase() === 'ADMIN') return true;
+        if (this.isAdmin(user)) return true;
         const permission = user.permissions?.find(p => p.component === component);
         return permission ? permission.canDelete : false;
     }
 
     hasRole(roleName: string): boolean {
-        const role = this.currentUser()?.role;
-        return role != null && role.toUpperCase() === roleName.toUpperCase();
+        return this.normalizeRole(this.currentUser()?.role) === this.normalizeRole(roleName);
+    }
+
+    /** 
+     * SaaS Subscriptions: Check if the tenant's current plan includes a specific feature module.
+     */
+    hasFeature(featureCode: string): boolean {
+        const user = this.currentUser();
+        if (!user || !user.features) return false;
+        return user.features.includes(featureCode);
     }
 }

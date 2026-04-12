@@ -21,6 +21,7 @@ export interface Product {
     minStock?: number;
     imageUrl?: string;
     isSellable?: boolean;
+    categoryId?: number;
     category?: Category;
     tenant?: Tenant;
 }

@@ -8,6 +8,8 @@ import { KitchenService, KitchenOrder } from '../../../core/services/kitchen.ser
 import { AuthService } from '../../../core/services/auth.service';
 import { CatalogueService } from '../../../core/services/catalogue.service';
 import { Router } from '@angular/router';
+import { StompClientService } from '../../../core/services/stomp-client.service';
+import { take } from 'rxjs/operators';
 
 @Component({
     selector: 'app-kitchen-display',
@@ -21,13 +23,14 @@ export class KitchenDisplayComponent implements OnInit, OnDestroy {
     private authService = inject(AuthService);
     private catalogueService = inject(CatalogueService);
     private router = inject(Router);
+    private stompClient = inject(StompClientService);
 
     orders = signal<KitchenOrder[]>([]);
     lastRefresh = signal<Date>(new Date());
     selectedCategoryIds = signal<number[]>([]);
     availableCategories = computed(() => this.catalogueService.getCategories());
     
-    private pollSub?: Subscription;
+    private wsSub?: Subscription;
 
     pendingOrders = computed(() => this.orders().filter(o => o.status === 'PENDING'));
     preparingOrders = computed(() => this.orders().filter(o => o.status === 'PREPARING'));
@@ -42,12 +45,18 @@ export class KitchenDisplayComponent implements OnInit, OnDestroy {
         }
 
         this.catalogueService.loadCatalogue();
-        this.restartPolling();
+        this.forceRefresh();
+
+        // Subscribe to real-time events from KDS Topic
+        this.wsSub = this.stompClient.watch(`/topic/kitchen/${user.branchId}`).subscribe(message => {
+            console.log('Real-Time KDS Event:', message.body);
+            // Trigger an immediate UI refresh when an order is created, modified or cancelled
+            this.forceRefresh();
+        });
     }
 
-    restartPolling() {
-        this.pollSub?.unsubscribe();
-        this.pollSub = this.kitchenService.startPolling(this.selectedCategoryIds()).subscribe(orders => {
+    forceRefresh() {
+        this.kitchenService.fetchOrders(this.selectedCategoryIds()).pipe(take(1)).subscribe(orders => {
             this.orders.set(orders);
             this.lastRefresh.set(new Date());
         });
@@ -59,11 +68,11 @@ export class KitchenDisplayComponent implements OnInit, OnDestroy {
                 ? ids.filter(id => id !== categoryId) 
                 : [...ids, categoryId]
         );
-        this.restartPolling();
+        this.forceRefresh();
     }
 
     ngOnDestroy(): void {
-        this.pollSub?.unsubscribe();
+        this.wsSub?.unsubscribe();
     }
 
     advance(order: KitchenOrder): void {

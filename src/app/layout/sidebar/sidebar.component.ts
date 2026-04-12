@@ -7,7 +7,7 @@ import { Inventory } from '../../core/api/model';
 import packageJson from '../../../../package.json';
 import { TenantService, TenantSettings } from '../../core/services/tenant.service';
 import { SidebarService } from '../../core/services/sidebar.service';
-import { MENU_STRUCTURE } from '../../core/constants/menu-items';
+import { MENU_STRUCTURE, MenuItem, MenuGroup } from '../../core/constants/menu-items';
 
 @Component({
   selector: 'app-sidebar',
@@ -27,7 +27,7 @@ export class SidebarComponent implements OnInit {
 
 
   // Grupos del Sidebar
-  menuStructure = MENU_STRUCTURE;
+  menuStructure: MenuGroup[] = MENU_STRUCTURE;
   
   lowStockCount = signal(0);
   version = packageJson.version;
@@ -56,8 +56,11 @@ export class SidebarComponent implements OnInit {
     return this.cashRegisterService.status() === 'OPEN';
   }
 
-  hasPermission(component: string): boolean {
-    return this.authService.hasPermission(component);
+  hasPermission(item: MenuItem): boolean {
+    if (item.featureReq && !this.authService.hasFeature(item.featureReq)) {
+      return false; // Active subscription does not include this feature
+    }
+    return this.authService.hasPermission(item.key || '');
   }
 
   toggleSidebar() {

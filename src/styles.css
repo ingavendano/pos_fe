@@ -1,7 +1,65 @@
-/* You can add global styles to this file, and also import other style files */
-
 @import 'tailwindcss';
 @import './app/core/services/theme/themes.css';
+
+:root {
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-heading: 'Outfit', var(--font-sans);
+  
+  /* Vercel-inspired subtle tokens */
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -1px rgba(0,0,0,0.04);
+  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.06), 0 4px 6px -2px rgba(0,0,0,0.03);
+  --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.06), 0 10px 10px -5px rgba(0,0,0,0.02);
+  
+  --border-radius-sm: 8px;
+  --border-radius-md: 12px;
+  --border-radius-lg: 18px;
+  --border-radius-xl: 24px;
+  --border-radius-2xl: 32px;
+
+  /* Sophisticated Soft Shadows (Multi-layer) */
+  --shadow-premium: 
+    0 2px 4px rgba(0,0,0,0.02),
+    0 10px 20px rgba(0,0,0,0.04),
+    0 20px 40px rgba(0,0,0,0.04);
+  
+  --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.08);
+}
+
+body {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #fcfcfc;
+  color: #111;
+}
+
+h1, h2, h3, h4, .font-heading {
+  font-family: var(--font-heading);
+  letter-spacing: -3%;
+  font-weight: 700;
+}
+
+/* Common UI Elements Refinement */
+input, select, textarea {
+  border-radius: var(--border-radius-md) !important;
+  border-width: 1px !important;
+  border-color: #e2e8f0 !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+input:focus {
+  border-color: var(--color-primary-500) !important;
+  box-shadow: 0 0 0 3px var(--color-accent-ring) !important;
+}
+
+button {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.active-link {
+  font-weight: 600 !important;
+}
 
 #print-section {
   display: none;
@@ -40,8 +98,8 @@
 
 /* Sidebar Animations */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateX(-10px); }
-  to { opacity: 1; transform: translateX(0); }
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes fadeInDown {
@@ -50,11 +108,11 @@
 }
 
 .animate-fade-in {
-  animation: fadeIn 0.3s ease-out forwards;
+  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .animate-fade-in-down {
-  animation: fadeInDown 0.2s ease-out forwards;
+  animation: fadeInDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .custom-scrollbar::-webkit-scrollbar {
@@ -71,18 +129,18 @@
 }
 
 /* Sidebar: enlace activo según tema */
-aside a.router-link-active.active-link,
+aside a.router-link-active,
 aside a.active-link {
+  background: var(--color-sidebar-active) !important;
   color: var(--color-sidebar-text-active) !important;
-  border-left-color: var(--color-primary-500) !important;
 }
+
 aside nav a:hover {
-  color: var(--color-sidebar-text-active);
   background: var(--color-sidebar-active);
+  opacity: 0.8;
 }
 
 /* Micro-Interactions & Animations */
-
 @keyframes fly-to-cart {
   0% { transform: scale(1); opacity: 1; }
   50% { transform: scale(1.2); opacity: 0.8; }
@@ -105,4 +163,33 @@ aside nav a:hover {
 
 .animate-pulse-scale {
   animation: pulse-scale 0.3s ease-out;
+}
+
+/* Glassmorphism Utilities */
+.glass {
+  background: rgba(255, 255, 255, 0.7) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+}
+
+.theme-premium .glass {
+  background: rgba(26, 5, 51, 0.6) !important;
+  border: 1px solid rgba(192, 132, 252, 0.2) !important;
+}
+
+.theme-restaurant .glass {
+  background: rgba(124, 29, 29, 0.6) !important;
+  border: 1px solid rgba(252, 165, 165, 0.2) !important;
+}
+
+/* Premium Card Hover */
+.premium-card {
+  border-radius: var(--border-radius-xl);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.premium-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-premium);
 }

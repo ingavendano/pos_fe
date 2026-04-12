@@ -19,8 +19,8 @@ export const routes: Routes = [
         canActivate: [setupGuard, authGuard],
         children: [
             { path: '', redirectTo: 'pos', pathMatch: 'full' },
-            { path: 'pos', loadComponent: () => import('./features/pos/pos-page/pos-page.component').then(m => m.PosPageComponent), data: { permission: 'POS' } },
-            { path: 'invoices', loadComponent: () => import('./features/invoices/invoices-page/invoices-page.component'), data: { permission: 'INVOICES' } },
+            { path: 'pos', loadComponent: () => import('./features/pos/pos-page/pos-page.component').then(m => m.PosPageComponent), data: { permission: 'POS', animation: 'PosPage' } },
+            { path: 'invoices', loadComponent: () => import('./features/invoices/invoices-page/invoices-page.component'), data: { permission: 'INVOICES', animation: 'InvoicesPage' } },
             {
                 path: 'catalog',
                 children: [
@@ -34,7 +34,7 @@ export const routes: Routes = [
                     {
                         path: 'dashboard',
                         loadComponent: () => import('./features/admin/dashboard/dashboard-page/dashboard-page.component'),
-                        data: { permission: 'REPORTS' }
+                        data: { permission: 'REPORTS', animation: 'DashboardPage' }
                     },
                     {
                         path: 'branches',
@@ -44,7 +44,7 @@ export const routes: Routes = [
                     {
                         path: 'tables',
                         loadComponent: () => import('./features/admin/tables-page/tables-page.component'),
-                        data: { permission: 'TABLES' }
+                        data: { permission: 'TABLES', animation: 'TablesPage' }
                     },
                     {
                         path: 'users',
@@ -89,6 +89,11 @@ export const routes: Routes = [
                     {
                         path: 'settings',
                         loadComponent: () => import('./features/admin/tenant-settings-page/tenant-settings-page.component'),
+                        data: { permission: 'SETTINGS', animation: 'SettingsPage' }
+                    },
+                    {
+                        path: 'subscription-plans',
+                        loadComponent: () => import('./features/admin/subscription-plans/subscription-plans.component').then(m => m.SubscriptionPlansComponent),
                         data: { permission: 'SETTINGS' }
                     }
                 ]

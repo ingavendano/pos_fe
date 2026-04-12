@@ -28,7 +28,9 @@ export default class TablesPageComponent implements OnInit {
     tableForm = {
         number: 1,
         capacity: 2,
-        status: 'AVAILABLE'
+        status: 'AVAILABLE',
+        posX: 0,
+        posY: 0
     };
 
     filteredTables = computed(() => {
@@ -85,10 +87,12 @@ export default class TablesPageComponent implements OnInit {
             this.tableForm = {
                 number: table.number ?? 1,
                 capacity: table.capacity ?? 2,
-                status: table.status ?? 'AVAILABLE'
+                status: table.status ?? 'AVAILABLE',
+                posX: table.posX ?? 0,
+                posY: table.posY ?? 0
             };
         } else {
-            this.tableForm = { number: 1, capacity: 2, status: 'AVAILABLE' };
+            this.tableForm = { number: 1, capacity: 2, status: 'AVAILABLE', posX: 0, posY: 0 };
         }
         this.isModalOpen.set(true);
     }
@@ -108,6 +112,8 @@ export default class TablesPageComponent implements OnInit {
             number: this.tableForm.number,
             capacity: this.tableForm.capacity,
             status: this.tableForm.status,
+            posX: this.tableForm.posX,
+            posY: this.tableForm.posY,
             branch: { id: branchId }
         };
 

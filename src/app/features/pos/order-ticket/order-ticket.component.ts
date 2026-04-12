@@ -7,10 +7,11 @@ import { AuthService } from '../../../core/services/auth.service';
 import { CustomerService, Customer } from '../../../core/services/customer.service';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, Subject, switchMap, of, tap } from 'rxjs';
 
 import { TicketPrintService } from '../../../core/services/ticket-print.service';
 import { BranchService } from '../../../core/services/branch.service';
+import { OrderApiService } from '../../../core/services/order-api.service';
 import { Branch } from '../../../core/api/model';
 
 @Component({
@@ -28,6 +29,7 @@ export class OrderTicketComponent {
   customerService = inject(CustomerService);
   ticketPrint = inject(TicketPrintService);
   branchService = inject(BranchService);
+  orderApiService = inject(OrderApiService);
 
   // Customer Selection Logic
   showCustomerSelector = signal(false);
@@ -83,6 +85,34 @@ export class OrderTicketComponent {
   }
 
 
+  private _executeCheckout(isPaid: boolean, paymentMethod: string) {
+    const activeTable = this.tableService.activeTable();
+    const currentUser = this.authService.currentUser();
+    const orderId = this.cartService.activeOrderId();
+
+    if (!activeTable || !currentUser || !currentUser.branchId || !currentUser.id) {
+      throw new Error("Faltan datos requeridos (mesa, usuario o sucursal) para procesar la orden.");
+    }
+
+    const payload = this.cartService.getOrderPayload();
+
+    const request$ = orderId
+        ? this.orderApiService.updateOrder(orderId, payload)
+        : this.orderApiService.createOrder(currentUser.branchId, activeTable.id!, currentUser.id, payload);
+
+    return request$.pipe(
+      switchMap(order => {
+        if (isPaid) {
+          return this.orderApiService.updateOrderStatus(order.id, 'PAID', paymentMethod);
+        }
+        return of(order);
+      }),
+      tap(() => {
+        this.cartService.postCheckoutCleanup();
+      })
+    );
+  }
+
   // processDoc handles Pre-cuenta and Paid invoice printing
   processDoc(isFinalPayment: boolean) {
     this.isPaidReceipt.set(isFinalPayment);
@@ -91,24 +121,27 @@ export class OrderTicketComponent {
     this.isProcessing.set(true);
     this.errorMessage.set(null);
 
-    // Disparar checkout normal al backend para guardar o cobrar
-    this.cartService.checkout(isFinalPayment, this.paymentMethod()).subscribe({
-      next: (order) => {
-        this.isProcessing.set(false);
-
-        if (isFinalPayment) {
-          this.ticketPrint.printInvoice(order, this.paymentMethod() || 'CASH');
-        } else {
-          this.ticketPrint.printPreCount(order);
+    try {
+      this._executeCheckout(isFinalPayment, this.paymentMethod()).subscribe({
+        next: (order) => {
+          this.isProcessing.set(false);
+          if (isFinalPayment) {
+            this.ticketPrint.printInvoice(order, this.paymentMethod() || 'CASH');
+          } else {
+            this.ticketPrint.printPreCount(order);
+          }
+        },
+        error: (err) => {
+          console.error('Print Error:', err);
+          this.isProcessing.set(false);
+          const errorMsg = err.error?.message || err.message || 'Error al conectar con el servidor.';
+          this.errorMessage.set(errorMsg);
         }
-      },
-      error: (err) => {
-        console.error('Print Error:', err);
-        this.isProcessing.set(false);
-        const errorMsg = err.error?.message || err.message || 'Error al conectar con el servidor.';
-        this.errorMessage.set(errorMsg);
-      }
-    });
+      });
+    } catch (err: any) {
+      this.isProcessing.set(false);
+      this.errorMessage.set(err.message || 'Error processing request');
+    }
   }
 
   // processOrder handle normal saving without printing
@@ -116,21 +149,48 @@ export class OrderTicketComponent {
     this.isProcessing.set(true);
     this.errorMessage.set(null);
 
-    this.cartService.checkout(isPaid, this.paymentMethod()).subscribe({
-      next: () => {
-        this.isProcessing.set(false);
-        this.showSuccess.set(true);
-        setTimeout(() => {
-          this.showSuccess.set(false);
-        }, 3000);
-      },
-      error: (err) => {
-        console.error('Checkout error:', err);
-        this.isProcessing.set(false);
-        const errorMsg = err.error?.message || err.message || 'Error al procesar la orden. Verifique la conexión.';
-        this.errorMessage.set(errorMsg);
-      }
-    });
+    try {
+      this._executeCheckout(isPaid, this.paymentMethod()).subscribe({
+        next: () => {
+          this.isProcessing.set(false);
+          this.showSuccess.set(true);
+          setTimeout(() => {
+            this.showSuccess.set(false);
+          }, 3000);
+        },
+        error: (err) => {
+          console.error('Checkout error:', err);
+          this.isProcessing.set(false);
+          const errorMsg = err.error?.message || err.message || 'Error al procesar la orden. Verifique la conexión.';
+          this.errorMessage.set(errorMsg);
+        }
+      });
+    } catch (err: any) {
+      this.isProcessing.set(false);
+      this.errorMessage.set(err.message || 'Error processing request');
+    }
+  }
+
+  cancelActiveOrder() {
+    const orderId = this.cartService.activeOrderId();
+    if (!orderId) return;
+
+    if (confirm('¿Está seguro de que desea CANCELAR esta orden? Se revertirá todo el inventario de la orden y no se podrá cobrar.')) {
+      this.isProcessing.set(true);
+      this.errorMessage.set(null);
+      this.orderApiService.updateOrderStatus(orderId, 'CANCELLED').subscribe({
+        next: () => {
+          this.isProcessing.set(false);
+          this.cartService.postCheckoutCleanup();
+        },
+        error: (err) => {
+          console.error('Cancel order error:', err);
+          this.isProcessing.set(false);
+          const errorMsg = err.error?.message || err.message || 'Error al cancelar la orden.';
+          this.errorMessage.set(errorMsg);
+        }
+      });
+    }
   }
 }
 

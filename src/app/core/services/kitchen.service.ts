@@ -1,6 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, interval, switchMap, startWith, share } from 'rxjs';
+import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { AuthService } from './auth.service';
 
@@ -37,20 +37,13 @@ export class KitchenService {
         return this.authService.currentUser()!.branchId!;
     }
 
-    /** Returns an Observable that polls every 10 seconds */
-    startPolling(categoryIds: number[] = []): Observable<KitchenOrder[]> {
-        this.isPolling.set(true);
-        return interval(POLL_INTERVAL_MS).pipe(
-            startWith(0),
-            switchMap(() => {
-                let params = '';
-                if (categoryIds.length > 0) {
-                    params = `?categoryIds=${categoryIds.join(',')}`;
-                }
-                return this.http.get<KitchenOrder[]>(`${this.API_URL}/branch/${this.branchId}${params}`);
-            }),
-            share()
-        );
+    /** Fetch immediately */
+    fetchOrders(categoryIds: number[] = []): Observable<KitchenOrder[]> {
+        let params = '';
+        if (categoryIds.length > 0) {
+            params = `?categoryIds=${categoryIds.join(',')}`;
+        }
+        return this.http.get<KitchenOrder[]>(`${this.API_URL}/branch/${this.branchId}${params}`);
     }
 
     advanceOrder(orderId: number): Observable<KitchenOrder> {

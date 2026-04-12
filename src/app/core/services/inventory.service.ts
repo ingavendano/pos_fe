@@ -8,7 +8,7 @@ import { Warehouse, Inventory, Product } from '../api/model';
 export interface StockMovement {
     id?: number;
     inventory: Inventory;
-    movementType: 'IN' | 'OUT' | 'ADJUSTMENT';
+    movementType: 'IN' | 'OUT' | 'ADJUSTMENT' | 'WASTAGE';
     quantity: number;
     reason?: string;
     createdAt: string;
@@ -57,6 +57,14 @@ export class InventoryService {
         userId?: number
     }): Observable<Inventory> {
         return this.http.post<Inventory>(`${this.api}/inventory/warehouse/${warehouseId}/adjust`, adjustment);
+    }
+
+    registerWastage(warehouseId: number, wastage: {
+        productId: number,
+        quantity: number,
+        reason: string
+    }): Observable<Inventory> {
+        return this.http.post<Inventory>(`${this.api}/inventory/warehouse/${warehouseId}/wastage`, wastage);
     }
 
     getMovements(warehouseId: number): Observable<StockMovement[]> {

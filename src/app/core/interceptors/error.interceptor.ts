@@ -1,6 +1,6 @@
 import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { catchError } from 'rxjs/operators';
+import { catchError, switchMap } from 'rxjs/operators';
 import { throwError } from 'rxjs';
 import { NotificationService } from '../services/notification.service';
 import { AuthService } from '../services/auth.service';
@@ -23,16 +23,38 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
                         break;
 
                     case 401:
-                        // No mostramos notificación para /me porque es una llamada
-                        // silenciosa en background — el logout ya redirige al login.
-                        if (req.url.includes('/auth/me')) {
+                        // Intentar refresh silencioso y reintentar 1 vez.
+                        // No aplicamos refresh a endpoints de auth para evitar loops.
+                        if (req.url.includes('/auth/login') || req.url.includes('/auth/refresh')) {
+                            authService.logout();
                             return throwError(() => error);
                         }
-                        errorMsg = 'Tu sesión ha expirado. Iniciando sesión nuevamente...';
-                        notificationService.show(errorMsg, 'error');
-                        // Logout limpio — redirige a /login automáticamente
-                        authService.logout();
-                        return throwError(() => error);
+
+                        // /me puede fallar si el token expira: igual intentamos refresh.
+                        if (req.headers.has('x-refresh-attempt')) {
+                            errorMsg = 'Tu sesión ha expirado. Inicia sesión nuevamente.';
+                            notificationService.show(errorMsg, 'error');
+                            authService.logout();
+                            return throwError(() => error);
+                        }
+
+                        return authService.refreshAccessToken().pipe(
+                            switchMap((fresh) => {
+                                const retried = req.clone({
+                                    setHeaders: {
+                                        Authorization: `Bearer ${fresh.token}`,
+                                        'x-refresh-attempt': '1',
+                                    },
+                                });
+                                return next(retried);
+                            }),
+                            catchError(() => {
+                                errorMsg = 'Tu sesión ha expirado. Inicia sesión nuevamente.';
+                                notificationService.show(errorMsg, 'error');
+                                authService.logout();
+                                return throwError(() => error);
+                            })
+                        );
 
                     case 403:
                         errorMsg = 'No tienes permisos para realizar esta acción.';

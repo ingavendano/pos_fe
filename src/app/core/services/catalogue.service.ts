@@ -74,7 +74,8 @@ export class CatalogueService {
                 this.categories.set(data.categories);
 
                 const mappedProducts = data.products.map(p => ({
-                    ...p
+                    ...p,
+                    category: p.category || (p.categoryId ? { id: p.categoryId, name: (p as any).categoryName } : undefined)
                 }));
                 this.products.set(mappedProducts);
             },
@@ -130,10 +131,17 @@ export class CatalogueService {
     }
 
     updateProduct(id: number, product: Partial<Product>) {
+        const categoryId = product.category?.id;
         let url = `${this.API_URL}/products/${id}`;
-        // Fix: Use category.id instead of categoryId because payload expects category.id maybe
-        // Actually, backend expects `category: {id: ...}`. Let's send that if product doesn't have it directly.
-        const productPayload: any = { ...product };
+        if (categoryId) {
+            url += `?categoryId=${categoryId}`;
+        }
+        
+        // Also ensure it's in the body for the fallback logic we just added to the backend
+        const productPayload: any = { 
+            ...product,
+            categoryId: categoryId 
+        };
         return this.http.put<Product>(url, productPayload);
     }
 

@@ -161,7 +161,7 @@
                             <td class="px-6 py-4 whitespace-nowrap">{{ m.createdAt | date: 'short' }}</td>
                             <td class="px-6 py-4">
                                 <span
-                                    [class]="'px-2 py-0.5 rounded-full ' + (m.movementType === 'IN' ? 'bg-green-100 text-green-700' : m.movementType === 'OUT' ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-700')">
+                                    [class]="'px-2 py-0.5 rounded-full ' + (m.movementType === 'IN' ? 'bg-green-100 text-green-700' : m.movementType === 'OUT' ? 'bg-red-100 text-red-700' : m.movementType === 'WASTAGE' ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-100 text-gray-700')">
                                     {{m.movementType}}
                                 </span>
                             </td>
@@ -258,7 +258,7 @@
                 {{selectedInventoryItem()?.warehouse?.name}}</p>
         </div>
         <form [formGroup]="adjustmentForm" (ngSubmit)="saveAdjustment()" class="space-y-4">
-            <div class="grid grid-cols-3 gap-2 p-1 bg-gray-100 rounded-lg">
+            <div class="grid grid-cols-4 gap-2 p-1 bg-gray-100 rounded-lg">
                 <button type="button" (click)="adjustmentForm.patchValue({type: 'IN'})"
                     [class]="'py-2 rounded-md font-medium text-xs transition ' + (adjustmentForm.get('type')?.value === 'IN' ? 'bg-white shadow text-green-600' : 'text-gray-500')">
                     ENTRADA
@@ -266,6 +266,10 @@
                 <button type="button" (click)="adjustmentForm.patchValue({type: 'OUT'})"
                     [class]="'py-2 rounded-md font-medium text-xs transition ' + (adjustmentForm.get('type')?.value === 'OUT' ? 'bg-white shadow text-red-600' : 'text-gray-500')">
                     SALIDA
+                </button>
+                <button type="button" (click)="adjustmentForm.patchValue({type: 'WASTAGE'})"
+                    [class]="'py-2 rounded-md font-medium text-xs transition ' + (adjustmentForm.get('type')?.value === 'WASTAGE' ? 'bg-white shadow text-yellow-600' : 'text-gray-500')">
+                    MERMA
                 </button>
                 <button type="button" (click)="adjustmentForm.patchValue({type: 'ADJUSTMENT'})"
                     [class]="'py-2 rounded-md font-medium text-xs transition ' + (adjustmentForm.get('type')?.value === 'ADJUSTMENT' ? 'bg-white shadow text-blue-600' : 'text-gray-500')">

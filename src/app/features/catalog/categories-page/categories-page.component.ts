@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { CatalogueService } from '../../../core/services/catalogue.service';
 import { Category } from '../../../core/api/model';
 import { AuthService } from '../../../core/services/auth.service';
+import { finalize } from 'rxjs';
 
 @Component({
     selector: 'app-categories-page',
@@ -60,6 +61,7 @@ export default class CategoriesPageComponent implements OnInit {
         this.isModalOpen.set(false);
         this.categoryForm = { name: '', description: '' };
         this.editingCategory.set(null);
+        this.isSaving.set(false);
     }
 
     saveCategory() {
@@ -76,7 +78,9 @@ export default class CategoriesPageComponent implements OnInit {
             return;
         }
 
-        request$.subscribe({
+        request$.pipe(
+            finalize(() => this.isSaving.set(false))
+        ).subscribe({
             next: () => {
                 this.catalogueService.loadCatalogue();
                 this.closeModal();
@@ -84,9 +88,6 @@ export default class CategoriesPageComponent implements OnInit {
             error: (err) => {
                 console.error('Error saving category', err);
                 alert('Ocurrió un error al guardar la categoría.');
-            },
-            complete: () => {
-                this.isSaving.set(false);
             }
         });
     }

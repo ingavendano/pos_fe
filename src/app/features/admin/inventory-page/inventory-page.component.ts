@@ -57,7 +57,7 @@ export class InventoryPageComponent implements OnInit {
     });
 
     adjustmentForm = this.fb.group({
-        type: ['IN' as 'IN' | 'OUT' | 'ADJUSTMENT', [Validators.required]],
+        type: ['IN' as 'IN' | 'OUT' | 'ADJUSTMENT' | 'WASTAGE', [Validators.required]],
         quantity: [1, [Validators.required, Validators.min(1)]],
         reason: ['', [Validators.required]]
     });
@@ -189,13 +189,27 @@ export class InventoryPageComponent implements OnInit {
         if (!warehouseId || !item || this.adjustmentForm.invalid) return;
 
         const val = this.adjustmentForm.value;
-        this.inventoryService.adjustStock(warehouseId, {
-            productId: item.product?.id ?? 0,
-            quantity: val.quantity!,
-            type: val.type!,
-            reason: val.reason!,
-            userId: this.authService.currentUser()?.id ?? 0
-        }).subscribe(() => {
+        const type = val.type as 'IN' | 'OUT' | 'ADJUSTMENT' | 'WASTAGE';
+        
+        let req$: import('rxjs').Observable<any>;
+        
+        if (type === 'WASTAGE') {
+            req$ = this.inventoryService.registerWastage(warehouseId, {
+                productId: item.product?.id ?? 0,
+                quantity: val.quantity!,
+                reason: val.reason!
+            });
+        } else {
+            req$ = this.inventoryService.adjustStock(warehouseId, {
+                productId: item.product?.id ?? 0,
+                quantity: val.quantity!,
+                type: type,
+                reason: val.reason!,
+                userId: this.authService.currentUser()?.id ?? 0
+            });
+        }
+
+        req$.subscribe(() => {
             this.loadStock();
             this.loadMovements();
             this.loadAlerts();
