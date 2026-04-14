@@ -16,8 +16,8 @@ export interface SubscriptionPlan {
   price: number;
   billingCycle: string;
   isActive: boolean;
-  features?: string[];
-  featureCodes?: string[]; // for creations
+  features?: SystemFeature[];
+  featureCodes?: string[]; 
 }
 
 export interface TenantSubscription {
@@ -52,5 +52,9 @@ export class SubscriptionService {
 
   getCurrentSubscription(tenantId: number): Observable<TenantSubscription> {
     return this.http.get<TenantSubscription>(`${this.API_URL}/tenant/${tenantId}/current`);
+  }
+
+  applyPlan(planId: number): Observable<void> {
+    return this.http.post<void>(`${this.API_URL}/apply/${planId}`, {});
   }
 }

@@ -3,6 +3,7 @@ import { Router, RouterOutlet } from '@angular/router';
 import { AuthService } from './core/services/auth.service';
 import { Title } from '@angular/platform-browser';
 import { TenantService } from './core/services/tenant.service';
+import { DomainService } from './core/services/domain.service';
 import { ChildrenOutletContexts } from '@angular/router';
 import { slideInAnimation } from './core/animations/route-animations';
 import { CommonModule } from '@angular/common';
@@ -24,6 +25,7 @@ export class App {
   private router = inject(Router);
   private titleService = inject(Title);
   private tenantService = inject(TenantService);
+  private domainService = inject(DomainService);
   private contexts = inject(ChildrenOutletContexts);
 
   getRouteAnimationData() {
@@ -34,10 +36,12 @@ export class App {
     effect(() => {
       const registered = this.authService.domainRegistered();
       const currentUrl = this.router.url;
+      const isBaseDomain = this.domainService.isBaseDomain();
       
-      if (registered === false && !currentUrl.includes('setup') && !currentUrl.includes('landing')) {
-        // Domain not registered, redirect to setup
-        this.router.navigate(['/setup']);
+      // If we are on a subdomain and it's not registered, we MUST redirect to base domain or show error
+      if (registered === false && !isBaseDomain && !currentUrl.includes('setup')) {
+        // Domain not registered for this tenant, redirect to base domain landing
+        window.location.href = this.domainService.getBaseUrl() + '/landing';
       }
     });
 

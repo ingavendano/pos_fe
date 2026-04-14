@@ -25,14 +25,21 @@ export class NotificationService implements OnDestroy {
         if (!tenantId || this.eventSource || !token) return;
 
         // Pedimos un token SSE de vida corta para no exponer el access token real en querystring.
-        this.http.get<{ token: string }>(`${environment.apiUrl}/notifications/stream/token?tenantId=${tenantId}`)
+        const tokenUrl = `${environment.apiUrl}/notifications/stream/token?tenantId=${tenantId}`;
+        console.log(`[NotificationService] Requesting SSE token from: ${tokenUrl}`);
+
+        this.http.get<{ token: string }>(tokenUrl)
             .subscribe({
                 next: ({ token: sseToken }) => {
+                    console.log('[NotificationService] SSE token received successfully');
                     const url = `${environment.apiUrl}/notifications/stream/tenant/${tenantId}?token=${encodeURIComponent(sseToken)}`;
+                    console.log(`[NotificationService] Opening EventSource to: ${url}`);
                     this.eventSource = new EventSource(url, { withCredentials: false });
                     this.bindListeners();
                 },
-                error: () => {
+                error: (err) => {
+                    console.error('[NotificationService] Error requesting SSE token:', err);
+                    console.error('[NotificationService] Backend at', environment.apiUrl, 'might be unreachable or refusing connection.');
                     // Reintentar silencioso después de 10s
                     setTimeout(() => this.connect(), 10_000);
                 }
@@ -65,7 +72,12 @@ export class NotificationService implements OnDestroy {
         this.eventSource.addEventListener('order_paid', handleEvent('order_paid') as EventListener);
         this.eventSource.addEventListener('cash_register', handleEvent('cash_register') as EventListener);
 
-        this.eventSource.onerror = () => {
+        this.eventSource.onopen = () => {
+            console.log('[NotificationService] EventSource connection established safely');
+        };
+
+        this.eventSource.onerror = (err) => {
+            console.error('[NotificationService] EventSource failed or closed:', err);
             // Reconnect silently after 10s if the connection drops
             this.disconnect();
             setTimeout(() => this.connect(), 10_000);

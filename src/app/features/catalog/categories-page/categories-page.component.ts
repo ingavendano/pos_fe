@@ -23,6 +23,32 @@ export default class CategoriesPageComponent implements OnInit {
     isSaving = signal(false);
     editingCategory = signal<Category | null>(null);
 
+    getCategoryIcon(name: string): string {
+        const lower = (name || '').toLowerCase();
+        if (lower.includes('bebida')) return 'coffee';
+        if (lower.includes('comida') || lower.includes('plato')) return 'utensils-crosshair';
+        if (lower.includes('postre')) return 'pie-chart';
+        if (lower.includes('entrada')) return 'soup';
+        if (lower.includes('pizza')) return 'pizza';
+        if (lower.includes('hamburguesa')) return 'sandwich';
+        return 'tag';
+    }
+
+    getCategoryColor(name: string): string {
+        const colors = [
+            'text-blue-600 bg-blue-50',
+            'text-emerald-600 bg-emerald-50',
+            'text-amber-600 bg-amber-50',
+            'text-rose-600 bg-rose-50',
+            'text-indigo-600 bg-indigo-50',
+            'text-violet-600 bg-violet-50',
+            'text-cyan-600 bg-cyan-50'
+        ];
+        // Simple hash based on name
+        const hash = (name || '').split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+        return colors[hash % colors.length];
+    }
+
     categoryForm = {
         name: '',
         description: ''

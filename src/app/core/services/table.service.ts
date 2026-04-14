@@ -58,7 +58,7 @@ export class TableService {
     }
 
     getActiveOrder(tableId: number): Observable<any> {
-        return this.http.get<any>(`http://localhost:8080/api/orders/table/${tableId}/active`);
+        return this.http.get<any>(`${environment.apiUrl}/orders/table/${tableId}/active`);
     }
 
     // --- Admin CRUD Operations ---

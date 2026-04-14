@@ -25,7 +25,8 @@ export default class TenantSettingsPageComponent {
         currencySymbol: '$',
         nit: '',
         nrc: '',
-        giro: ''
+        giro: '',
+        stockMultiplier: 5
     };
 
     constructor() {

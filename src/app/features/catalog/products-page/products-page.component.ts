@@ -5,6 +5,7 @@ import { CatalogueService } from '../../../core/services/catalogue.service';
 import { Product, Category } from '../../../core/api/model';
 import { RecipeManagementComponent } from '../recipe-management/recipe-management.component';
 import { AuthService } from '../../../core/services/auth.service';
+import { TenantService } from '../../../core/services/tenant.service';
 import { finalize } from 'rxjs';
 
 @Component({
@@ -16,6 +17,7 @@ import { finalize } from 'rxjs';
 export default class ProductsPageComponent implements OnInit {
   catalogueService = inject(CatalogueService);
   authService = inject(AuthService);
+  tenantService = inject(TenantService);
 
   searchTerm = signal('');
   filterCategoryId = signal<number | null>(null);

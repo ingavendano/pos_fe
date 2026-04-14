@@ -4,9 +4,17 @@ import { setupGuard } from './core/guards/setup.guard';
 
 export const routes: Routes = [
     {
+        path: '',
+        loadComponent: () => import('./features/home-decision/home-decision.component').then(m => m.HomeDecisionComponent)
+    },
+    {
+        path: 'landing',
+        loadComponent: () => import('./features/landing/landing.component').then(m => m.LandingComponent)
+    },
+    {
         path: 'setup',
         loadComponent: () => import('./features/setup/setup').then(m => m.SetupComponent),
-        canActivate: [setupGuard] // Will allow access if setup == false, else will redirect to login/pos
+        canActivate: [setupGuard]
     },
     {
         path: 'login',

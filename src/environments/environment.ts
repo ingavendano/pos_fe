@@ -1,5 +1,4 @@
-// Development environment
 export const environment = {
     production: false,
-    apiUrl: `http://${window.location.hostname}:8080/api`
+    apiUrl: `http://${window.location.hostname}:8081/api`
 };

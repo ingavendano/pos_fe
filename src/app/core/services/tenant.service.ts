@@ -9,6 +9,7 @@ export interface TenantSettings {
     nit?: string;
     nrc?: string;
     giro?: string;
+    stockMultiplier: number;
 }
 
 import { HttpClient } from '@angular/common/http';

@@ -103,6 +103,37 @@
                     </div>
                 </section>
 
+                <!-- Stock Configuration -->
+                <section class="mb-10 animate-fade-in" style="animation-delay: 150ms;">
+                    <h3 class="text-sm font-bold text-gray-800 uppercase tracking-widest mb-4 flex items-center">
+                        <svg class="w-4 h-4 mr-2 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                        </svg>
+                        Gestión de Inventario
+                    </h3>
+                    <div class="bg-indigo-50/50 p-6 rounded-2xl border border-indigo-100 flex items-start gap-4">
+                        <div class="p-3 bg-white rounded-xl text-indigo-600 shadow-sm border border-indigo-100">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <label class="block text-sm font-bold text-gray-700 mb-1">Multiplicador de Barra de Stock</label>
+                            <p class="text-xs text-indigo-600/70 mb-4 leading-relaxed">
+                                Controla cuándo se muestra la barra de stock "llena". Ejemplo: Con un multiplicador de 5, si el stock mínimo es 10, la barra se llenará al llegar a 50 unidades.
+                            </p>
+                            <div class="flex items-center gap-4">
+                                <input type="range" [(ngModel)]="formModel.stockMultiplier" name="stockMultiplier"
+                                    min="2" max="20" step="1" 
+                                    class="flex-1 h-2 bg-indigo-100 rounded-lg appearance-none cursor-pointer accent-indigo-600">
+                                <div class="min-w-[50px] py-1 px-3 bg-white border border-indigo-200 rounded-lg text-center font-bold text-indigo-700 shadow-sm">
+                                    x{{ formModel.stockMultiplier }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
                 <!-- Footer / Actions -->
                 <div class="pt-6 border-t flex justify-end">
                     <button type="submit" [disabled]="isSaving() || !tenantForm.valid"

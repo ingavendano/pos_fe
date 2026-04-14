@@ -1,168 +1,156 @@
-<div class="p-6 h-full flex flex-col bg-gray-50">
-  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+<div class="p-6 bg-gray-50/50 min-h-screen">
+  <!-- Header con Buscador -->
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
     <div>
-      <h1 class="text-2xl font-black text-gray-800 tracking-tight">Historial de Facturas</h1>
-      <p class="text-sm text-gray-500 mt-1">Busca y consulta todas las comandas de esta sucursal.</p>
+      <h1 class="text-2xl font-black text-gray-900 tracking-tight">Historial de Facturación</h1>
+      <p class="text-sm text-gray-500 mt-1">Consulta y gestiona las comandas y certificaciones electrónicas.</p>
     </div>
 
     <div class="relative w-full md:w-96">
       <input type="text" [(ngModel)]="searchTerm"
-        class="w-full py-2.5 pl-10 pr-4 text-sm text-gray-700 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-sm"
+        class="w-full py-2.5 pl-10 pr-4 text-sm text-gray-700 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all shadow-sm"
         placeholder="Buscar por # Orden, Mesero o Mesa...">
-      <svg class="w-5 h-5 text-gray-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-      </svg>
+      <i class="lucide-search absolute left-3 top-3 text-gray-400 text-sm"></i>
     </div>
   </div>
 
-  <!-- Loading State -->
   @if (invoiceService.isLoading()) {
-  <div
-    class="flex-1 flex flex-col items-center justify-center p-8 bg-white rounded-2xl border border-gray-100 shadow-sm">
-    <svg class="animate-spin h-10 w-10 text-indigo-600 mb-4" fill="none" viewBox="0 0 24 24">
-      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-      <path class="opacity-75" fill="currentColor"
-        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-      </path>
-    </svg>
-    <span class="text-gray-500 font-medium tracking-wide">Cargando historial...</span>
-  </div>
+    <div class="col-span-full py-20 flex flex-col items-center justify-center">
+        <i class="lucide-loader-2 animate-spin text-indigo-600 text-4xl mb-4"></i>
+        <p class="text-gray-500 font-medium tracking-wide">Cargando facturas...</p>
+    </div>
   } @else if (invoiceService.error()) {
-  <!-- Error State -->
-  <div
-    class="flex-1 flex flex-col items-center justify-center p-8 bg-white rounded-2xl border border-red-100 shadow-sm text-center">
-    <div class="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mb-4">
-      <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-      </svg>
+    <div class="bg-white border border-red-100 rounded-[2rem] p-12 text-center animate-fade-in shadow-sm">
+      <div class="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+        <i class="lucide-alert-circle text-3xl"></i>
+      </div>
+      <h3 class="text-xl font-bold text-gray-900 mb-2">Error al cargar datos</h3>
+      <p class="text-gray-500 max-w-md mx-auto">{{ invoiceService.error() }}</p>
+      <button (click)="loadData()" class="mt-6 px-8 py-2.5 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-all shadow-lg active:scale-95">
+        Reintentar ahora
+      </button>
     </div>
-    <h3 class="text-xl font-bold text-gray-800 mb-2">Ups, algo salió mal</h3>
-    <p class="text-gray-500 max-w-md">{{ invoiceService.error() }}</p>
-    <button (click)="loadData()"
-      class="mt-6 px-6 py-2 bg-indigo-50 text-indigo-700 font-medium rounded-lg hover:bg-indigo-100 transition-colors">
-      Reintentar
-    </button>
-  </div>
   } @else {
-  <!-- Data Table -->
-  <div class="flex-1 bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden flex flex-col">
-    <div class="overflow-x-auto flex-1 h-full relative">
-      <table class="w-full text-left text-sm text-gray-600 whitespace-nowrap">
-        <thead class="text-xs text-gray-500 uppercase bg-gray-50 sticky top-0 z-10 shadow-sm border-b border-gray-200">
-          <tr>
-            <th scope="col" class="px-6 py-4 font-bold tracking-wider"># Orden</th>
-            <th scope="col" class="px-6 py-4 font-bold tracking-wider">Fecha</th>
-            <th scope="col" class="px-6 py-4 font-bold tracking-wider">Mesa</th>
-            <th scope="col" class="px-6 py-4 font-bold tracking-wider">Atendió</th>
-            <th scope="col" class="px-6 py-4 font-bold tracking-wider">Total</th>
-            <th scope="col" class="px-6 py-4 font-bold tracking-wider">DTE Status</th>
-            <th scope="col" class="px-6 py-4 font-bold tracking-wider">Estatus</th>
-            <th scope="col" class="px-6 py-4 font-bold tracking-wider text-right">Acciones</th>
-         </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-100">
-          @for (order of filteredInvoices(); track order.id) {
-          <tr class="hover:bg-gray-50 transition-colors">
-            <td
-              class="px-6 py-4 font-medium text-gray-900 border-l-4 border-l-transparent hover:border-l-indigo-500 transition-all">
-              #{{ order.consecutiveNumber || order.id }}</td>
-            <td class="px-6 py-4 text-gray-500">{{ order.createdAt | date:'dd MMM yyyy, HH:mm' }}</td>
-            <td class="px-6 py-4">
-              <div class="flex items-center">
-                <div
-                  class="w-8 h-8 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center font-bold text-xs mr-3">
-                  T{{ order.tableNumber }}
-                </div>
-                <span class="font-medium text-gray-700">Mesa {{ order.tableNumber }}</span>
-              </div>
-            </td>
-            <td class="px-6 py-4">
-              <div class="flex items-center space-x-2">
-                <div
-                  class="w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-[10px] uppercase">
-                  {{ (order.waiterName || 'XX').substring(0,2).toUpperCase() }}
-                </div>
-                <span>{{ order.waiterName || 'Mesero' }}</span>
-              </div>
-            </td>
-            <td class="px-6 py-4 font-bold text-gray-900">
-              {{ order.total | currency:tenantService.getCurrencyCode():'symbol-narrow' }}
-            </td>
-            <td class="px-6 py-4">
-              @if (order.invoice?.dteStatus === 'CERTIFIED') {
-              <span
-                class="px-2.5 py-1 text-xs font-bold text-emerald-700 bg-emerald-100 rounded-lg inline-flex items-center">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"></span>
-                Certificado
-              </span>
-              } @else if (order.invoice?.dteStatus === 'DTE_REJECTED') {
-              <span
-                class="px-2.5 py-1 text-xs font-bold text-red-700 bg-red-100 rounded-lg inline-flex items-center"
-                [title]="order.invoice?.rejectionReason">
-                <span class="w-1.5 h-1.5 rounded-full bg-red-500 mr-1.5"></span>
-                Rechazado
-              </span>
-              } @else {
-              <span
-                class="px-2.5 py-1 text-xs font-bold text-gray-500 bg-gray-100 rounded-lg inline-flex items-center">
-                <span class="w-1.5 h-1.5 rounded-full bg-gray-400 mr-1.5"></span>
-                Sin DTE
-              </span>
-              }
-            </td>
-            <td class="px-6 py-4">
-              @if (order.status === 'PAID') {
-              <span
-                class="px-2.5 py-1 text-xs font-bold text-emerald-700 bg-emerald-100 rounded-lg inline-flex items-center">
-                Pagado
-              </span>
-              } @else {
-              <span
-                class="px-2.5 py-1 text-xs font-bold text-amber-700 bg-amber-100 rounded-lg inline-flex items-center">
-                Abierta
-              </span>
-              }
-            </td>
-            <td class="px-6 py-4 text-right">
-              <button (click)="viewInvoice(order)"
-                class="text-indigo-600 hover:text-indigo-900 bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-lg transition-colors font-medium text-xs">
-                Ver Detalles
-              </button>
-            </td>
-          </tr>
-          } @empty {
-          <tr>
-            <td colspan="7" class="px-6 py-12 text-center text-gray-500">
-              <svg class="w-12 h-12 mx-auto text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
-                </path>
-              </svg>
-              <p class="text-sm">No se encontraron facturas con esos criterios de búsqueda.</p>
-            </td>
-          </tr>
-          }
-        </tbody>
-      </table>
-    </div>
+    <!-- Invoices List (Horizontal Cards) -->
+    <div class="grid grid-cols-1 gap-4">
+      @for (order of filteredInvoices(); track order.id) {
+        <div class="bg-white border border-gray-100 rounded-2xl p-5 flex flex-col md:flex-row items-center gap-6 hover:shadow-md hover:border-gray-300 transition-all group overflow-hidden relative">
+          
+          <!-- ID / Numero -->
+          <div class="w-full md:w-32 py-4 bg-gray-50 rounded-xl border border-gray-100 flex flex-col items-center justify-center shrink-0">
+            <span class="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1">Orden</span>
+            <span class="text-lg font-black text-gray-900">#{{ order.consecutiveNumber || order.id }}</span>
+          </div>
 
-    <!-- Pagination / Stats Footer summary -->
-    <div
-      class="bg-gray-50 border-t border-gray-200 px-6 py-3 text-xs text-gray-500 flex justify-between items-center rounded-b-2xl">
-      <span>Mostrando <strong>{{ filteredInvoices().length }}</strong> resultados.</span>
-      @if (authService.currentUser()?.role === 'ADMIN') {
-      <span>Total histórico listado: <strong class="text-gray-800">{{ currentTotalSum() |
-          currency:tenantService.getCurrencyCode():'symbol-narrow' }}</strong></span>
+          <!-- Info Principal -->
+          <div class="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full px-2">
+            <!-- Mesa y Hora -->
+            <div class="flex items-start gap-3">
+              <div class="w-10 h-10 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center shrink-0">
+                <i class="lucide-navigation text-sm"></i>
+              </div>
+              <div>
+                <p class="text-xs font-bold text-gray-900">Mesa {{ order.tableNumber }}</p>
+                <p class="text-[10px] text-gray-400 font-medium">{{ order.createdAt | date:'HH:mm, dd MMM' }}</p>
+              </div>
+            </div>
+
+            <!-- Mesero -->
+            <div class="flex items-start gap-3">
+              <div class="w-10 h-10 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
+                <i class="lucide-user text-sm"></i>
+              </div>
+              <div>
+                <p class="text-xs font-bold text-gray-900">{{ order.waiterName || 'Personal' }}</p>
+                <p class="text-[10px] text-gray-400 font-medium uppercase tracking-tight">Atendió</p>
+              </div>
+            </div>
+
+            <!-- DTE Status -->
+            <div class="flex items-start gap-3">
+                @if (order.invoice?.dteStatus === 'CERTIFIED') {
+                  <div class="w-10 h-10 rounded-full bg-green-50 text-green-600 flex items-center justify-center shrink-0">
+                    <i class="lucide-check-circle-2 text-sm"></i>
+                  </div>
+                  <div>
+                    <p class="text-xs font-bold text-green-600">Certificada</p>
+                    <p class="text-[10px] text-gray-400 font-medium">DTE Emitido</p>
+                  </div>
+                } @else if (order.invoice?.dteStatus === 'DTE_REJECTED') {
+                  <div class="w-10 h-10 rounded-full bg-red-50 text-red-600 flex items-center justify-center shrink-0">
+                    <i class="lucide-x-circle text-sm"></i>
+                  </div>
+                  <div>
+                    <p class="text-xs font-bold text-red-600">Rechazada</p>
+                    <p class="text-[10px] text-gray-400 font-medium">Revisar Receptor</p>
+                  </div>
+                } @else {
+                  <div class="w-10 h-10 rounded-full bg-gray-50 text-gray-400 flex items-center justify-center shrink-0 border border-gray-100">
+                    <i class="lucide-file-text text-sm"></i>
+                  </div>
+                  <div>
+                    <p class="text-xs font-bold text-gray-500">Sin DTE</p>
+                    <p class="text-[10px] text-gray-400 font-medium">No certificada</p>
+                  </div>
+                }
+            </div>
+
+            <!-- Total -->
+            <div class="flex flex-col items-end sm:items-start lg:items-end justify-center">
+              <p class="text-lg font-black text-gray-900 group-hover:text-indigo-600 transition-colors">
+                {{ order.total | currency:tenantService.getCurrencyCode():'symbol-narrow' }}
+              </p>
+              @if (order.status === 'PAID') {
+                <span class="px-2 py-0.5 bg-green-100 text-green-700 text-[9px] font-black uppercase rounded-md tracking-wider">Pagado</span>
+              } @else {
+                <span class="px-2 py-0.5 bg-amber-100 text-amber-700 text-[9px] font-black uppercase rounded-md tracking-wider">Pendiente</span>
+              }
+            </div>
+          </div>
+
+          <!-- Acciones -->
+          <div class="w-full md:w-auto shrink-0 flex gap-2">
+            <button (click)="viewInvoice(order)"
+              class="flex-1 md:w-32 py-2.5 bg-gray-900 text-white text-[11px] font-black uppercase rounded-xl hover:bg-indigo-600 transition-all shadow-md active:scale-95">
+              Ver Detalles
+            </button>
+          </div>
+        </div>
+      } @empty {
+        <div class="bg-white border border-dashed border-gray-300 rounded-[2.5rem] p-16 text-center">
+          <i class="lucide-file-x text-gray-200 text-6xl mb-4"></i>
+          <p class="text-xl font-bold text-gray-900">Sin registros</p>
+          <p class="text-sm text-gray-500 mt-2">No encontramos facturas con los filtros aplicados.</p>
+        </div>
       }
     </div>
-  </div>
+
+    <!-- Footer de Sumarios -->
+    <div class="mt-8 bg-white border border-gray-100 rounded-3xl p-6 flex flex-col sm:flex-row justify-between items-center gap-4 shadow-sm animate-fade-in">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600">
+            <i class="lucide-list-checks"></i>
+        </div>
+        <div>
+            <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Total Resultados</p>
+            <p class="text-xl font-black text-gray-900">{{ filteredInvoices().length }} <span class="text-sm font-medium text-gray-400">ítems</span></p>
+        </div>
+      </div>
+
+      @if (authService.currentUser()?.role === 'ADMIN') {
+        <div class="text-right">
+            <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Venta Total Listada</p>
+            <p class="text-2xl font-black text-indigo-600">
+                {{ currentTotalSum() | currency:tenantService.getCurrencyCode():'symbol-narrow' }}
+            </p>
+        </div>
+      }
+    </div>
   }
 </div>
 
-<!-- Modal for details -->
+<!-- Modal Detail -->
 @if (selectedOrder()) {
-<app-invoice-detail-modal [order]="selectedOrder()!" (close)="selectedOrder.set(null)">
-</app-invoice-detail-modal>
+  <app-invoice-detail-modal [order]="selectedOrder()!" (close)="selectedOrder.set(null)">
+  </app-invoice-detail-modal>
 }

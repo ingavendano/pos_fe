@@ -69,19 +69,23 @@ export default class UsersPageComponent implements OnInit {
         return role ? role.name : roleName;
     }
 
+    getUserIcon(roleName?: string): string {
+        const lower = (roleName || '').toLowerCase();
+        if (lower.includes('admin')) return 'shield-check';
+        if (lower.includes('cocina')) return 'flame';
+        if (lower.includes('mesero') || lower.includes('waiter')) return 'shopping-bag';
+        if (lower.includes('caja') || lower.includes('cashier')) return 'banknote';
+        return 'user';
+    }
+
     getRoleBadgeColor(roleName?: string): string {
         if (!roleName) return 'bg-gray-100 text-gray-800';
-        // Cycle through a palette based on role index for consistent but distinct colors
-        const idx = this.roleService.roles().findIndex(r => r.name === roleName);
-        const palette = [
-            'bg-purple-100 text-purple-800',
-            'bg-blue-100 text-blue-800',
-            'bg-orange-100 text-orange-800',
-            'bg-cyan-100 text-cyan-800',
-            'bg-green-100 text-green-800',
-            'bg-pink-100 text-pink-800',
-        ];
-        return idx >= 0 ? palette[idx % palette.length] : 'bg-gray-100 text-gray-800';
+        const lower = roleName.toLowerCase();
+        if (lower.includes('admin')) return 'bg-rose-50 text-rose-600 border-rose-100';
+        if (lower.includes('cocina')) return 'bg-amber-50 text-amber-600 border-amber-100';
+        if (lower.includes('mesero')) return 'bg-blue-50 text-blue-600 border-blue-100';
+        if (lower.includes('caja')) return 'bg-emerald-50 text-emerald-600 border-emerald-100';
+        return 'bg-gray-50 text-gray-600 border-gray-100';
     }
 
     isFormValid() {

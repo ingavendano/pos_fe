@@ -139,13 +139,14 @@ export class SetupComponent {
       },
       error: (err) => {
         this.isSubmitting = false;
-        if (err.status === 400 && typeof err.error === 'string' && err.error.includes('already')) {
+        const msg = err.error || err.message || '';
+        if (err.status === 400 && (msg.includes('already') || msg.includes('registrado'))) {
           // The backend says setup is already complete.
           (this.setupService as any).isSetupCompleteCached = true;
           this.router.navigate(['/login']);
           return;
         }
-        this.errorMessage = 'Ocurrió un error en la configuración: ' + (err.error || err.message);
+        this.errorMessage = 'Ocurrió un error en la configuración: ' + msg;
       }
     });
   }

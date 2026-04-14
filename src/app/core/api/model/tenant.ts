@@ -19,6 +19,7 @@ export interface Tenant {
     nrc?: string;
     giro?: string;
     isActive?: boolean;
+    stockMultiplier?: number;
     createdAt?: string;
 }
 

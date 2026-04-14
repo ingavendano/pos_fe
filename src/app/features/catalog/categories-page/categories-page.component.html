@@ -1,7 +1,8 @@
-<div class="p-6 h-full flex flex-col bg-gray-50">
-  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+<div class="p-6 bg-gray-50/50 min-h-screen">
+  <!-- Header -->
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
     <div>
-      <h1 class="text-2xl font-black text-gray-800 tracking-tight">Categorías</h1>
+      <h1 class="text-2xl font-black text-gray-900 tracking-tight">Categorías</h1>
       <p class="text-sm text-gray-500 mt-1">Administra los departamentos o familias de tus productos.</p>
     </div>
 
@@ -11,167 +12,123 @@
           class="w-full py-2.5 pl-10 pr-4 text-sm text-gray-700 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-sm"
           placeholder="Buscar categoría...">
         <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-          <svg class="w-4 h-4 text-gray-400 font-bold" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-          </svg>
+          <i class="lucide-search text-gray-400 text-sm"></i>
         </div>
       </div>
       @if (authService.hasWritePermission('CATEGORIES')) {
       <button (click)="openModal(null)"
-        class="flex items-center justify-center px-4 py-2.5 bg-indigo-600 text-white text-sm font-semibold rounded-xl hover:bg-indigo-700 transition-colors shadow-sm whitespace-nowrap">
-        <svg class="w-5 h-5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-        </svg>
-        Nueva
+        [style.background-color]="'var(--color-primary-600)'"
+        class="flex items-center justify-center px-5 py-2.5 text-white text-sm font-semibold rounded-xl hover:opacity-90 transition-all shadow-sm whitespace-nowrap active:scale-95">
+        <i class="lucide-plus mr-2"></i>
+        Nueva Categoría
       </button>
       }
     </div>
   </div>
 
-  <!-- Categories Table -->
-  <div class="flex-1 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col">
-    <div class="overflow-x-auto">
-      <table class="w-full text-left text-sm text-gray-500">
-        <thead class="text-xs text-gray-700 uppercase bg-gray-50/50 border-b border-gray-100">
-          <tr>
-            <th scope="col" class="px-6 py-4 font-bold">ID</th>
-            <th scope="col" class="px-6 py-4 font-bold">Nombre</th>
-            <th scope="col" class="px-6 py-4 font-bold">Descripción</th>
-            <th scope="col" class="px-6 py-4 font-bold text-right">Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          @if (catalogueService.isLoading()) {
-          <tr>
-            <td colspan="4" class="px-6 py-8 text-center text-gray-500">
-              <div class="flex justify-center items-center">
-                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-indigo-600" xmlns="http://www.w3.org/2000/svg"
-                  fill="none" viewBox="0 0 24 24">
-                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                  <path class="opacity-75" fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                  </path>
-                </svg>
-                Cargando categorías...
-              </div>
-            </td>
-          </tr>
-          } @else if (filteredCategories().length === 0) {
-          <tr>
-            <td colspan="4" class="px-6 py-12 text-center text-gray-500">
-              <div class="flex flex-col items-center justify-center">
-                <svg class="w-12 h-12 text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                    d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-                </svg>
-                <p class="text-base font-medium text-gray-900">No hay categorías disponibles</p>
-                <p class="text-sm mt-1">Crea una nueva categoría para comenzar.</p>
-              </div>
-            </td>
-          </tr>
-          } @else {
-          @for (category of filteredCategories(); track category.id) {
-          <tr class="bg-white border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
-            <td class="px-6 py-4 font-medium text-gray-900">#{{ category.id }}</td>
-            <td class="px-6 py-4">
-              <div class="font-medium text-gray-900">{{ category.name }}</div>
-            </td>
-            <td class="px-6 py-4 text-gray-500 max-w-xs truncate">
-              {{ category.description || '-- Sin descripción --' }}
-            </td>
-            <td class="px-6 py-4 text-right">
-                <div class="flex items-center justify-end gap-2">
-                  @if (authService.hasWritePermission('CATEGORIES')) {
-                  <button (click)="openModal(category)"
-                    class="p-2 text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors"
-                    title="Editar">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z">
-                      </path>
-                    </svg>
-                  </button>
-                  }
-                  @if (authService.hasDeletePermission('CATEGORIES')) {
-                  <button (click)="deleteCategory(category.id!)"
-                    class="p-2 text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors" title="Eliminar">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
-                      </path>
-                    </svg>
-                  </button>
-                  }
-                </div>
-            </td>
-          </tr>
-          }
-          }
-        </tbody>
-      </table>
-    </div>
+  <!-- Categories Grid (Horizontal Cards Style) -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    @if (catalogueService.isLoading()) {
+      @for (i of [1,2,3,4,5,6]; track i) {
+        <div class="bg-white border border-gray-100 rounded-2xl p-5 flex items-center gap-4 animate-fade-in shadow-sm">
+            <div class="w-14 h-14 rounded-xl skeleton shrink-0"></div>
+            <div class="flex-1 space-y-2">
+                <div class="h-4 w-3/4 skeleton rounded-md"></div>
+                <div class="h-3 w-1/2 skeleton rounded-md"></div>
+            </div>
+        </div>
+      }
+    } @else if (filteredCategories().length === 0) {
+      <div class="col-span-full bg-white border border-dashed border-gray-300 rounded-3xl p-12 text-center">
+        <i class="lucide-package-open text-gray-300 text-5xl mb-4"></i>
+        <p class="text-lg font-bold text-gray-900">No hay categorías disponibles</p>
+        <p class="text-sm text-gray-500 mt-1">Empieza creando tu primera familia de productos.</p>
+      </div>
+    } @else {
+      @for (category of filteredCategories(); track category.id) {
+        <div class="bg-white border border-gray-200 rounded-2xl p-5 flex items-center gap-4 hover:shadow-md hover:border-gray-300 transition-all group overflow-hidden relative">
+          <!-- Icono con Color Individual -->
+          <div [class]="'w-14 h-14 rounded-xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-110 ' + getCategoryColor(category.name || '')">
+            <i [class]="'lucide-' + getCategoryIcon(category.name || '') + ' text-2xl'"></i>
+          </div>
+
+          <!-- Info Principal -->
+          <div class="flex-1 min-w-0">
+            <h3 class="text-base font-bold text-gray-900 truncate">{{ category.name }}</h3>
+            <p class="text-xs text-gray-500 truncate leading-relaxed">
+              {{ category.description || 'Sin descripción adicional' }}
+            </p>
+          </div>
+
+          <!-- Acciones en Hover o fijas -->
+          <div class="flex items-center gap-1">
+            @if (authService.hasWritePermission('CATEGORIES')) {
+              <button (click)="openModal(category)"
+                class="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all"
+                title="Editar">
+                <i class="lucide-edit-2 text-sm"></i>
+              </button>
+            }
+            @if (authService.hasDeletePermission('CATEGORIES')) {
+              <button (click)="deleteCategory(category.id!)"
+                class="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all" 
+                title="Eliminar">
+                <i class="lucide-trash-2 text-sm"></i>
+              </button>
+            }
+          </div>
+        </div>
+      }
+    }
   </div>
 </div>
 
 <!-- Category Modal -->
 @if (isModalOpen()) {
-<div class="fixed inset-0 z-50 flex items-center justify-center p-4">
-  <!-- Backdrop -->
-  <div class="absolute inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity" (click)="closeModal()"></div>
-
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/40 backdrop-blur-sm p-4">
   <!-- Modal Content -->
-  <div
-    class="bg-white rounded-2xl shadow-xl w-full max-w-md relative z-10 flex flex-col max-h-[90vh] overflow-hidden animate-fade-in">
-
+  <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md relative z-10 flex flex-col max-h-[90vh] overflow-hidden animate-fade-in border border-gray-100">
     <!-- Header -->
-    <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
-      <h2 class="text-lg font-bold text-gray-800">{{ editingCategory() ? 'Editar Categoría' : 'Nueva Categoría' }}</h2>
-      <button (click)="closeModal()"
-        class="text-gray-400 hover:text-gray-600 transition-colors bg-white hover:bg-gray-100 p-1.5 rounded-lg border border-transparent hover:border-gray-200">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-        </svg>
+    <div class="px-6 py-5 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
+      <h2 class="text-lg font-bold text-gray-900">{{ editingCategory() ? 'Editar Categoría' : 'Nueva Categoría' }}</h2>
+      <button (click)="closeModal()" class="text-gray-400 hover:text-gray-600 p-2 bg-white rounded-lg shadow-sm border border-gray-100 transition-all">
+        <i class="lucide-x text-sm"></i>
       </button>
     </div>
 
     <!-- Body -->
-    <div class="p-6 overflow-y-auto">
-      <div class="space-y-4">
+    <div class="p-6 overflow-y-auto bg-white">
+      <div class="space-y-5">
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
+          <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Nombre</label>
           <input type="text" [(ngModel)]="categoryForm.name"
-            class="w-full py-2.5 px-3 text-sm text-gray-900 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow">
+            class="w-full py-3 px-4 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none"
+            placeholder="Ej: Bebidas Frías">
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Descripción (Opcional)</label>
+          <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Descripción (Opcional)</label>
           <textarea [(ngModel)]="categoryForm.description" rows="3"
-            class="w-full py-2.5 px-3 text-sm text-gray-900 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow resize-none"></textarea>
+            class="w-full py-3 px-4 text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none resize-none"
+            placeholder="Describe brevemente esta categoría..."></textarea>
         </div>
       </div>
     </div>
 
     <!-- Footer -->
-    <div class="px-6 py-4 border-t border-gray-100 bg-gray-50/50 flex justify-end gap-3">
+    <div class="px-6 py-5 border-t border-gray-100 bg-gray-50/50 flex justify-end gap-3">
       <button (click)="closeModal()"
-        class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors shadow-sm">
+        class="flex-1 py-2.5 text-sm font-bold text-gray-600 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors shadow-sm">
         Cancelar
       </button>
       <button (click)="saveCategory()" [disabled]="isSaving() || !categoryForm.name"
-        class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center">
+        [style.background-color]="'var(--color-primary-600)'"
+        class="flex-1 py-2.5 text-sm font-bold text-white rounded-xl hover:opacity-90 transition-all shadow-lg shadow-indigo-600/10 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center">
         @if (isSaving()) {
-        <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-          <path class="opacity-75" fill="currentColor"
-            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-          </path>
-        </svg>
-        Guardando...
+          <i class="lucide-loader-2 animate-spin mr-2"></i>
+          Guardando...
         } @else {
-        Guardar
+          Guardar Categoría
         }
       </button>
     </div>

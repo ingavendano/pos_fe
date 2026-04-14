@@ -93,4 +93,30 @@ export class ExpensesPageComponent implements OnInit {
     };
     return labels[category] || category;
   }
+
+  getCategoryIcon(category: ExpenseCategory): string {
+    const icons: Record<string, string> = {
+      RENT: 'home',
+      UTILITIES: 'zap',
+      SALARY: 'users',
+      MAINTENANCE: 'hammer',
+      SUPPLIES: 'shopping-cart',
+      MARKETING: 'megaphone',
+      OTHER: 'more-horizontal'
+    };
+    return icons[category] || 'receipt';
+  }
+
+  getCategoryColor(category: ExpenseCategory): string {
+    const colors: Record<string, string> = {
+      RENT: 'text-indigo-600 bg-indigo-50 border-indigo-100',
+      UTILITIES: 'text-amber-600 bg-amber-50 border-amber-100',
+      SALARY: 'text-emerald-600 bg-emerald-50 border-emerald-100',
+      MAINTENANCE: 'text-orange-600 bg-orange-50 border-orange-100',
+      SUPPLIES: 'text-blue-600 bg-blue-50 border-blue-100',
+      MARKETING: 'text-pink-600 bg-pink-50 border-pink-100',
+      OTHER: 'text-slate-600 bg-slate-50 border-slate-100'
+    };
+    return colors[category] || 'text-gray-600 bg-gray-50 border-gray-100';
+  }
 }
