@@ -22,7 +22,11 @@ export class SetupService {
       return of(this.setupComplete);
     }
 
-    return this.http.get<SetupStatusResponse>(`${this.apiUrl}/status`).pipe(
+    // Send the frontend hostname explicitly — the backend cannot reliably
+    // infer it from proxy headers (e.g. Vercel replaces Host with the OCI IP).
+    const domain = window.location.hostname;
+
+    return this.http.get<SetupStatusResponse>(`${this.apiUrl}/status`, { params: { domain } }).pipe(
       tap(res => this.setupComplete = res.setupComplete),
       map(res => res.setupComplete),
       catchError(() => {
