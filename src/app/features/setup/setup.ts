@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { SetupService } from '../../core/services/setup.service';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-setup',
@@ -19,6 +20,7 @@ export class SetupComponent {
   adminForm: FormGroup;
 
   setupService = inject(SetupService);
+  authService = inject(AuthService);
   router = inject(Router);
   fb = inject(FormBuilder);
 
@@ -131,18 +133,26 @@ export class SetupComponent {
       }]
     };
 
+    console.log('Sending wizard setup payload:', payload);
+
     this.setupService.runWizard(payload).subscribe({
       next: () => {
+        console.log('Setup successfully completed');
+        // Refresh company information (Name, theme, currency)
+        this.authService.loadTenantInfo();
+        
         this.isSubmitting = false;
         // Redirect to login
         this.router.navigate(['/login']);
       },
       error: (err) => {
         this.isSubmitting = false;
+        console.error('Setup error:', err);
         const msg = err.error || err.message || '';
         if (err.status === 400 && (msg.includes('already') || msg.includes('registrado'))) {
           // The backend says setup is already complete.
-          (this.setupService as any).isSetupCompleteCached = true;
+          // Correctly navigate to login anyway
+          this.setupService.checkStatus().subscribe(); // Triggers internal refresh
           this.router.navigate(['/login']);
           return;
         }

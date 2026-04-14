@@ -13,10 +13,9 @@ export interface SetupStatusResponse {
 export class SetupService {
   private http = inject(HttpClient);
   private apiUrl = `${environment.apiUrl}/public/setup`;
+  
+  // Cache for setup status
   private setupComplete: boolean | null = null;
-
-  // local cache
-  private isSetupCompleteCached: boolean | null = null;
 
   checkStatus(): Observable<boolean> {
     if (this.setupComplete !== null) {
@@ -27,17 +26,20 @@ export class SetupService {
       tap(res => this.setupComplete = res.setupComplete),
       map(res => res.setupComplete),
       catchError(() => {
-        // default to requires setup if error (maybe server is down, but safer to try setup)
-        // or default to false to prevent accessing without setup
         return of(false);
       })
     );
   }
 
   runWizard(payload: any): Observable<any> {
-    // using text response because backend returns String message
     return this.http.post(`${this.apiUrl}/wizard`, payload, { responseType: 'text' }).pipe(
-      tap(() => this.isSetupCompleteCached = true)
+      tap(() => {
+        this.setupComplete = true; // Essential to allow guard passage
+      })
     );
+  }
+
+  resetCache(): void {
+    this.setupComplete = null;
   }
 }

@@ -83,7 +83,8 @@ export class AuthService {
                     }
                 },
                 error: (err) => {
-                    console.warn('No se pudo cargar la información del tenant desde este dominio.');
+                    console.warn('Tenant info not found for this domain yet.');
+                    this.tenantInfo.set(null);
                     if (err.status === 404) {
                         this.domainRegistered.set(false);
                     }
