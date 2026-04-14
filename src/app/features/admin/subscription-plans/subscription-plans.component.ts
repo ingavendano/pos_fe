@@ -14,10 +14,10 @@ export class SubscriptionPlansComponent implements OnInit {
 
   plans = signal<SubscriptionPlan[]>([]);
   features = signal<SystemFeature[]>([]);
-  currentSubscription = signal<any>(null);
-  
+
   showModal = signal(false);
-  
+  expandedPlan = signal<number | null>(null);
+
   newPlan: SubscriptionPlan = {
     name: '',
     description: '',
@@ -28,29 +28,33 @@ export class SubscriptionPlansComponent implements OnInit {
   };
 
   ngOnInit(): void {
-    this.loadPlans();
+    // Load features first so they are ready when plans load
     this.loadFeatures();
-    this.loadCurrentSubscription();
+    this.loadPlans();
   }
 
   loadPlans() {
     this.subscriptionService.getPlans().subscribe({
       next: (data) => this.plans.set(data),
-      error: (err) => console.error('Error al cargar planes')
+      error: () => console.error('Error al cargar planes')
     });
   }
 
   loadFeatures() {
     this.subscriptionService.getFeatures().subscribe({
       next: (data) => this.features.set(data),
-      error: (err) => console.error('Error al cargar funcionalidades')
+      error: () => console.error('Error al cargar funcionalidades')
     });
   }
 
-  loadCurrentSubscription() {
-    // We assume the user is logged in and we have access to their tenantId via auth?
-    // Actually, getActiveFeaturesForTenant is already in buildAuthResponse.
-    // For now, let's just mark the current plan if we have the info.
+  /** Returns true if the given plan includes this feature code */
+  planHasFeature(plan: SubscriptionPlan, featureCode: string): boolean {
+    return plan.features?.some(f => f.code === featureCode) ?? false;
+  }
+
+  toggleExpand(planId: number | undefined) {
+    if (!planId) return;
+    this.expandedPlan.set(this.expandedPlan() === planId ? null : planId);
   }
 
   getFeatureColor(code: string): string {
@@ -99,15 +103,14 @@ export class SubscriptionPlansComponent implements OnInit {
 
   onApplyPlan(planId: number | undefined) {
     if (!planId) return;
-    
     if (confirm('¿Estás seguro de que deseas cambiar a este plan?')) {
-        this.subscriptionService.applyPlan(planId).subscribe({
-            next: () => {
-                alert('Plan aplicado exitosamente. Por favor, reinicia la aplicación para actualizar tus permisos.');
-                window.location.reload(); // Refresh to update auth features
-            },
-            error: (err) => alert('Error al aplicar el plan.')
-        });
+      this.subscriptionService.applyPlan(planId).subscribe({
+        next: () => {
+          alert('Plan aplicado exitosamente. Por favor, reinicia la aplicación para actualizar tus permisos.');
+          window.location.reload();
+        },
+        error: () => alert('Error al aplicar el plan.')
+      });
     }
   }
 
@@ -146,9 +149,8 @@ export class SubscriptionPlansComponent implements OnInit {
       alert('Por favor completa todos los campos requeridos');
       return;
     }
-
     this.subscriptionService.createPlan(this.newPlan).subscribe({
-      next: (created) => {
+      next: () => {
         alert('Plan de suscripción creado exitosamente');
         this.loadPlans();
         this.closeModal();
