@@ -1,10 +1,27 @@
-<aside class="relative flex flex-col h-screen px-4 py-8 transition-all duration-500 overflow-visible border-r glass"
-  [class.w-72]="!isCollapsed()" [class.w-[84px]]="isCollapsed()"
-  style="border-color: var(--color-sidebar-border); border-radius: 0 24px 24px 0">
+<!-- ========================================================
+  SIDEBAR: Desktop fixed + Mobile drawer overlay
+  ======================================================== -->
 
-  <!-- Resize Toggle -->
+<!-- MOBILE OVERLAY (dark backdrop when drawer is open) -->
+@if (sidebarService.isMobileOpen()) {
+  <div class="fixed inset-0 z-40 bg-black/50 md:hidden"
+       (click)="sidebarService.closeMobile()">
+  </div>
+}
+
+<!-- SIDEBAR PANEL -->
+<aside class="fixed md:relative z-50 md:z-auto flex flex-col h-screen px-4 py-8 transition-all duration-300 overflow-visible border-r glass"
+       [class.w-72]="!isCollapsed()"
+       [class.w-[84px]]="isCollapsed() && !sidebarService.isMobileOpen()"
+       [class.-translate-x-full]="!sidebarService.isMobileOpen()"
+       [class.translate-x-0]="sidebarService.isMobileOpen()"
+       [class.md:translate-x-0]="true"
+       [class.w-72]="sidebarService.isMobileOpen()"
+       style="border-color: var(--color-sidebar-border); border-radius: 0 24px 24px 0">
+
+  <!-- Desktop Resize Toggle (hidden on mobile) -->
   <button (click)="toggleSidebar()"
-    class="absolute -right-3 top-9 flex items-center justify-center w-6 h-6
+    class="absolute -right-3 top-9 hidden md:flex items-center justify-center w-6 h-6
            bg-white border border-gray-100 rounded-full shadow-sm
            hover:shadow-md focus:outline-none transition-all z-10">
     <svg class="w-3.5 h-3.5 text-gray-400 transition-transform duration-300"
@@ -14,16 +31,22 @@
     </svg>
   </button>
 
+  <!-- Mobile Close Button -->
+  <button (click)="sidebarService.closeMobile()"
+    class="absolute right-4 top-4 flex md:hidden items-center justify-center w-8 h-8
+           bg-gray-100 rounded-xl text-gray-500 hover:bg-gray-200 transition-all">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+    </svg>
+  </button>
+
   <!-- Logo + nombre tenant -->
   <div class="flex items-center gap-3.5 mb-10 px-1 overflow-hidden">
-    <div class="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-premium border border-white/10"
-         style="background: linear-gradient(135deg, var(--color-sidebar-logo-from), var(--color-sidebar-logo-to))">
-      <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-          d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-      </svg>
+    <div class="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 overflow-hidden shadow-sm"
+         style="background: #ffffff; border: 1.5px solid rgba(0,0,0,0.08)">
+      <img src="/Logo3.png" alt="Logo" class="w-full h-full object-contain p-1.5" />
     </div>
-    @if (!isCollapsed()) {
+    @if (!isCollapsed() || sidebarService.isMobileOpen()) {
       <div class="flex flex-col animate-fade-in truncate">
         <span class="text-sm font-bold text-gray-900 tracking-tight leading-none">
           {{ tenantModel()?.name || 'SaaS POS' }}
@@ -40,7 +63,7 @@
       @for (group of menuStructure; track group.label) {
         @if (group.items.length > 0) {
           <div [class.pt-3]="!$first">
-            @if (!isCollapsed()) {
+            @if (!isCollapsed() || sidebarService.isMobileOpen()) {
               <p class="sidebar-section-header">{{ group.label }}</p>
             }
 
@@ -50,21 +73,22 @@
                    routerLinkActive="sidebar-item-active"
                    [routerLinkActiveOptions]="item.routerLinkActiveOptions || {exact: true}"
                    [target]="item.external ? '_blank' : '_self'"
+                   (click)="sidebarService.closeMobile()"
                    class="sidebar-item flex items-center justify-between px-4 py-3 rounded-2xl transition-all duration-300 hover:translate-x-1"
                    [attr.title]="isCollapsed() ? item.label : null">
-                  
+
                   <div class="flex items-center gap-3">
                     <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         [attr.d]="item.icon" />
                     </svg>
-                    @if (!isCollapsed()) {
+                    @if (!isCollapsed() || sidebarService.isMobileOpen()) {
                       <span class="text-sm whitespace-nowrap animate-fade-in">{{ item.label }}</span>
                     }
                   </div>
 
                   <!-- Special badges/icons -->
-                  @if (!isCollapsed()) {
+                  @if (!isCollapsed() || sidebarService.isMobileOpen()) {
                     @if (item.label === 'Caja') {
                       @if (registerIsOpen()) {
                         <span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-green-500 text-white">ABI</span>

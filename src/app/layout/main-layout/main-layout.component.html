@@ -1,13 +1,13 @@
 <div class="flex h-screen bg-gray-50 font-sans text-gray-900 overflow-hidden">
-  <!-- Sidebar is fixed on the left -->
+  <!-- Sidebar (fixed on mobile as drawer, relative on desktop) -->
   <app-sidebar></app-sidebar>
 
   <!-- Main Content wrapper -->
-  <div class="flex-1 flex flex-col h-full overflow-hidden bg-[#FAFAFA]">
+  <div class="flex-1 flex flex-col h-full overflow-hidden bg-[#FAFAFA] min-w-0">
     <app-header></app-header>
 
     <!-- The routable view -->
-    <main class="flex-1 overflow-x-hidden overflow-y-auto px-6 py-8 md:px-10 lg:px-12">
+    <main class="flex-1 overflow-x-hidden overflow-y-auto px-4 py-4 md:px-8 md:py-6 lg:px-10 lg:py-8">
       <div class="max-w-[1600px] mx-auto">
         <router-outlet></router-outlet>
       </div>
