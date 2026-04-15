@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CategoryFilterComponent } from '../category-filter/category-filter.component';
 import { ProductGridComponent } from '../product-grid/product-grid.component';
@@ -21,13 +21,20 @@ import { TableService } from '../../../core/services/table.service';
   templateUrl: './pos-page.component.html'
 })
 export class PosPageComponent implements OnInit {
-  // Inject services
   catalogueService = inject(CatalogueService);
   cartService = inject(CartService);
   tableService = inject(TableService);
 
+  /** Controls mobile tab: 'products' | 'ticket' */
+  mobileView = signal<'products' | 'ticket'>('products');
+
   ngOnInit() {
     this.tableService.loadTables();
+  }
+
+  clearTable() {
+    this.mobileView.set('products');
+    this.tableService.clearSelection();
   }
 
   onProductSelected(selection: { product: any, event: MouseEvent }) {
@@ -39,8 +46,7 @@ export class PosPageComponent implements OnInit {
   private animateFlyToCart(event: MouseEvent) {
     const flyer = document.createElement('div');
     flyer.className = 'animate-fly bg-indigo-500 w-6 h-6';
-    
-    // Find target (order ticket panel)
+
     const target = document.querySelector('app-order-ticket');
     if (!target) return;
 
@@ -54,14 +60,11 @@ export class PosPageComponent implements OnInit {
     flyer.style.setProperty('--target-y', `${targetY}px`);
 
     document.body.appendChild(flyer);
-
-    flyer.addEventListener('animationend', () => {
-      flyer.remove();
-    });
+    flyer.addEventListener('animationend', () => flyer.remove());
   }
 
   onOrderProcessed() {
-    // When the order is paid or saved
+    this.mobileView.set('products');
     this.tableService.clearSelection();
   }
 }
