@@ -17,6 +17,8 @@ export class HeaderComponent implements OnInit {
         return this.cashRegisterService.status() === 'OPEN';
     }
 
+    userMenuOpen = false;
+
     ngOnInit() {
         if (this.authService.isAuthenticated() && !this.authService.currentUser()?.branchName) {
             this.authService.logout();

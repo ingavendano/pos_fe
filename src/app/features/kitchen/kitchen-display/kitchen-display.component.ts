@@ -91,9 +91,9 @@ export class KitchenDisplayComponent implements OnInit, OnDestroy {
     }
 
     urgencyClass(minutes: number): string {
-        if (minutes >= 15) return 'border-red-500 bg-red-50';
-        if (minutes >= 8) return 'border-amber-400 bg-amber-50';
-        return 'border-gray-200 bg-white';
+        if (minutes >= 15) return 'border-red-500 bg-red-950/50 text-white';
+        if (minutes >= 8) return 'border-amber-400 bg-amber-950/50 text-white';
+        return 'border-gray-700 bg-gray-900/50 text-gray-200';
     }
 
     statusLabel(status: string): string {

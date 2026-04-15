@@ -1,5 +1,5 @@
 <div
-  class="flex flex-col h-full bg-white border-l border-gray-200 shadow-[inset_1px_0_0_0_rgba(0,0,0,0.05)] w-96 relative">
+  class="flex flex-col h-full bg-white border-l border-gray-200 shadow-[inset_1px_0_0_0_rgba(0,0,0,0.05)] w-full lg:w-96 relative">
   <!-- Ticket Header: Refined Hierarchy -->
   <div class="px-6 py-6 border-b border-gray-100 flex items-center justify-between bg-white z-10">
     <div>
@@ -118,160 +118,172 @@
   </div>
   }
 
-  <!-- Ticket Items (Scrollable) -->
-  <div class="flex-1 overflow-y-auto p-4 space-y-3">
-    @for (item of cartService.items(); track $index) {
-    <div class="flex flex-col p-4 border border-gray-100 rounded-xl bg-white shadow-sm hover:border-gray-200 transition-all duration-200">
-      <div class="flex justify-between items-start">
-        <div class="pr-2">
-          <span class="font-bold text-gray-900 text-sm leading-tight block mb-0.5">{{ item.product.name }}</span>
-          <div class="text-[11px] text-gray-400 font-medium">{{ item.product.price |
-            currency:tenantService.getCurrencyCode():'symbol-narrow' }} / ud</div>
+  <!-- Main Scrollable Area (Items + Summary) -->
+  <div class="flex-1 overflow-y-auto p-4 flex flex-col gap-6 scroll-smooth">
+    
+    <!-- Ticket Items -->
+    <div class="space-y-3">
+      @for (item of cartService.items(); track $index) {
+      <div class="flex flex-col p-4 border border-gray-100 rounded-xl bg-white shadow-sm hover:border-gray-200 transition-all duration-200">
+        <div class="flex justify-between items-start">
+          <div class="pr-2">
+            <span class="font-bold text-gray-900 text-sm leading-tight block mb-0.5">{{ item.product.name }}</span>
+            <div class="text-[11px] text-gray-400 font-medium">{{ item.product.price |
+              currency:tenantService.getCurrencyCode():'symbol-narrow' }} / ud</div>
+          </div>
+          <span class="font-black text-gray-900 text-sm">{{ item.subtotal |
+            currency:tenantService.getCurrencyCode():'symbol-narrow' }}</span>
         </div>
-        <span class="font-black text-gray-900 text-sm">{{ item.subtotal |
-          currency:tenantService.getCurrencyCode():'symbol-narrow' }}</span>
-      </div>
 
-      <div class="flex items-center justify-between mt-3">
-        <!-- Quantity Controls: Stripe Minimalist Style -->
-        <div class="flex items-center border border-gray-100 rounded-lg bg-gray-50 overflow-hidden">
-          <button (click)="cartService.updateQuantity($index, item.quantity - 1)"
-            class="px-2.5 py-1 text-gray-400 hover:text-gray-900 hover:bg-white transition-all">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20 12H4"></path>
-            </svg>
-          </button>
-          <span class="px-3 py-1 text-xs font-bold text-gray-900 min-w-[2rem] text-center">{{ item.quantity }}</span>
-          <button (click)="cartService.updateQuantity($index, item.quantity + 1)"
-            class="px-2.5 py-1 text-gray-400 hover:text-gray-900 hover:bg-white transition-all">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path>
-            </svg>
-          </button>
+        <div class="flex items-center justify-between mt-3">
+          <!-- Quantity Controls -->
+          <div class="flex items-center border border-gray-100 rounded-lg bg-gray-50 overflow-hidden">
+            <button (click)="cartService.updateQuantity($index, item.quantity - 1)"
+              class="px-2.5 py-1 text-gray-400 hover:text-gray-900 hover:bg-white transition-all">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20 12H4"></path>
+              </svg>
+            </button>
+            <span class="px-3 py-1 text-xs font-bold text-gray-900 min-w-[2rem] text-center">{{ item.quantity }}</span>
+            <button (click)="cartService.updateQuantity($index, item.quantity + 1)"
+              class="px-2.5 py-1 text-gray-400 hover:text-gray-900 hover:bg-white transition-all">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path>
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
+      } @empty {
+      <div class="h-full flex flex-col items-center justify-center text-gray-400 space-y-3 py-8">
+        <svg class="w-16 h-16 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z">
+          </path>
+        </svg>
+        <p class="font-medium">No hay productos en la orden</p>
+      </div>
+      }
     </div>
-    } @empty {
-    <div class="h-full flex flex-col items-center justify-center text-gray-400 space-y-3">
-      <svg class="w-16 h-16 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-          d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z">
-        </path>
-      </svg>
-      <p class="font-medium">No hay productos en la orden</p>
-    </div>
+
+    @if (cartService.items().length > 0) {
+      <!-- Summary, Discount & Payments -->
+      <div class="border-t border-gray-100 pt-4 space-y-5 pb-6">
+        
+        <!-- Totals Lines -->
+        <div class="space-y-2">
+          <div class="flex justify-between text-gray-600">
+            <span>Subtotal</span>
+            <span class="font-medium">{{ cartService.orderSummary().subtotal |
+              currency:tenantService.getCurrencyCode():'symbol-narrow' }}</span>
+          </div>
+
+          <!-- Dynamic Taxes loop using signals -->
+          @for (taxItem of cartService.orderSummary().taxes; track taxItem.tax.id) {
+          <div class="flex justify-between text-sm"
+            [class]="taxItem.tax.type === 'RETENTION' ? 'text-purple-600' : 'text-gray-500'">
+            <span>{{ taxItem.tax.name }} ({{ taxItem.tax.percentage }}%)</span>
+            <span>
+              {{ taxItem.tax.type === 'RETENTION' ? '-' : '' }}
+              {{ taxItem.calculatedAmount | currency:tenantService.getCurrencyCode():'symbol-narrow' }}
+            </span>
+          </div>
+          }
+
+          @if (cartService.orderSummary().discountAmount > 0) {
+          <div class="flex justify-between text-sm text-red-600">
+            <span>Descuento</span>
+            <span class="font-medium">-{{ cartService.orderSummary().discountAmount |
+              currency:tenantService.getCurrencyCode():'symbol-narrow' }}</span>
+          </div>
+          }
+
+          <div class="flex justify-between text-xl font-bold text-gray-900 pt-3 border-t border-gray-100 mt-2">
+            <span>Total</span>
+            <span [class.animate-pulse-scale]="totalPulse()" style="color: var(--color-accent-text)">{{ cartService.orderSummary().grandTotal |
+              currency:tenantService.getCurrencyCode():'symbol-narrow' }}</span>
+          </div>
+        </div>
+
+        <!-- Discount Input -->
+        <div class="p-3 bg-gray-50 rounded-xl border border-gray-100">
+          <div class="flex items-center justify-between mb-2">
+            <p class="text-xs font-medium text-gray-500 uppercase tracking-wide">Descuento</p>
+            <div class="flex rounded-lg overflow-hidden border border-gray-200 text-xs">
+              <button (click)="cartService.discountType.set(cartService.discountType() === 'PERCENT' ? null : 'PERCENT')"
+                [ngStyle]="cartService.discountType() === 'PERCENT' ? {'background': 'var(--color-primary-600)', 'color': 'white'} : {}"
+                [class]="cartService.discountType() === 'PERCENT'
+                  ? 'px-2 py-1 font-semibold'
+                  : 'px-2 py-1 bg-white text-gray-500 hover:bg-gray-100'">%</button>
+              <button (click)="cartService.discountType.set(cartService.discountType() === 'FIXED' ? null : 'FIXED')"
+                [ngStyle]="cartService.discountType() === 'FIXED' ? {'background': 'var(--color-primary-600)', 'color': 'white'} : {}"
+                [class]="cartService.discountType() === 'FIXED'
+                  ? 'px-2 py-1 font-semibold border-l'
+                  : 'px-2 py-1 bg-white text-gray-500 hover:bg-gray-100 border-l border-gray-200'">Monto</button>
+            </div>
+          </div>
+          @if (cartService.discountType()) {
+          <input type="number" min="0" step="0.01"
+            [placeholder]="cartService.discountType() === 'PERCENT' ? '0 – 100 %' : 'Monto a descontar'"
+            [value]="cartService.discountValue()" (input)="cartService.discountValue.set(+$any($event.target).value)"
+            class="w-full rounded-lg border border-gray-200 px-3 py-1.5 text-sm focus:border-indigo-400 focus:ring-1 focus:ring-indigo-300 bg-white">
+          }
+        </div>
+
+        <!-- Payment Method Selector -->
+        <div>
+          <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Método de Pago</p>
+          <div class="grid grid-cols-3 gap-3">
+            <button (click)="paymentMethod.set('CASH')"
+              [class]="paymentMethod() === 'CASH'
+                    ? 'flex flex-col items-center gap-1.5 py-3 rounded-xl border border-gray-900 bg-gray-900 text-white shadow-md transition-all'
+                    : 'flex flex-col items-center gap-1.5 py-3 rounded-xl border border-gray-100 bg-white text-gray-400 hover:border-gray-200 hover:text-gray-900 transition-all'">
+              <span class="text-base" [class.grayscale-0]="paymentMethod() === 'CASH'" [class.grayscale]="paymentMethod() !== 'CASH'">💵</span>
+              <span class="text-[10px] font-bold uppercase tracking-tight">Efectivo</span>
+            </button>
+            <button (click)="paymentMethod.set('CARD')"
+              [class]="paymentMethod() === 'CARD'
+                    ? 'flex flex-col items-center gap-1.5 py-3 rounded-xl border border-[var(--color-primary-500)] bg-[var(--color-primary-50)] text-[var(--color-primary-700)] shadow-sm transition-all'
+                    : 'flex flex-col items-center gap-1.5 py-3 rounded-xl border border-gray-100 bg-white text-gray-400 hover:border-gray-200 hover:text-gray-900 transition-all'">
+              <span class="text-base" [class.grayscale-0]="paymentMethod() === 'CARD'" [class.grayscale]="paymentMethod() !== 'CARD'">💳</span>
+              <span class="text-[10px] font-bold uppercase tracking-tight">Tarjeta</span>
+            </button>
+            <button (click)="paymentMethod.set('TRANSFER')"
+              [class]="paymentMethod() === 'TRANSFER'
+                    ? 'flex flex-col items-center gap-1.5 py-3 rounded-xl border border-gray-900 bg-gray-900 text-white shadow-md transition-all'
+                    : 'flex flex-col items-center gap-1.5 py-3 rounded-xl border border-gray-100 bg-white text-gray-400 hover:border-gray-200 hover:text-gray-900 transition-all'">
+              <span class="text-base" [class.grayscale-0]="paymentMethod() === 'TRANSFER'" [class.grayscale]="paymentMethod() !== 'TRANSFER'">🏦</span>
+              <span class="text-[10px] font-bold uppercase tracking-tight">Transf.</span>
+            </button>
+          </div>
+        </div>
+      </div>
     }
   </div>
 
-  <!-- Ticket Summary & Action Footer -->
-  <div class="bg-white border-t border-gray-200 p-6 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] relative z-10 w-full">
-    <!-- Totals Lines -->
-    <div class="space-y-2 mb-4">
-      <div class="flex justify-between text-gray-600">
-        <span>Subtotal</span>
-        <span class="font-medium">{{ cartService.orderSummary().subtotal |
-          currency:tenantService.getCurrencyCode():'symbol-narrow' }}</span>
-      </div>
-
-      <!-- Dynamic Taxes loop using signals -->
-      @for (taxItem of cartService.orderSummary().taxes; track taxItem.tax.id) {
-      <div class="flex justify-between text-sm"
-        [class]="taxItem.tax.type === 'RETENTION' ? 'text-purple-600' : 'text-gray-500'">
-        <span>{{ taxItem.tax.name }} ({{ taxItem.tax.percentage }}%)</span>
-        <span>
-          {{ taxItem.tax.type === 'RETENTION' ? '-' : '' }}
-          {{ taxItem.calculatedAmount | currency:tenantService.getCurrencyCode():'symbol-narrow' }}
-        </span>
-      </div>
-      }
-
-      @if (cartService.orderSummary().discountAmount > 0) {
-      <div class="flex justify-between text-sm text-red-600">
-        <span>Descuento</span>
-        <span class="font-medium">-{{ cartService.orderSummary().discountAmount |
-          currency:tenantService.getCurrencyCode():'symbol-narrow' }}</span>
-      </div>
-      }
-
-      <div class="flex justify-between text-xl font-bold text-gray-900 pt-3 border-t border-gray-100 mt-2">
-        <span>Total</span>
-        <span [class.animate-pulse-scale]="totalPulse()" style="color: var(--color-accent-text)">{{ cartService.orderSummary().grandTotal |
-          currency:tenantService.getCurrencyCode():'symbol-narrow' }}</span>
-      </div>
-    </div>
-
-    <!-- Discount Input -->
-    <div class="mb-3 p-3 bg-gray-50 rounded-xl border border-gray-100">
-      <div class="flex items-center justify-between mb-2">
-        <p class="text-xs font-medium text-gray-500 uppercase tracking-wide">Descuento</p>
-        <div class="flex rounded-lg overflow-hidden border border-gray-200 text-xs">
-          <button (click)="cartService.discountType.set(cartService.discountType() === 'PERCENT' ? null : 'PERCENT')"
-            [ngStyle]="cartService.discountType() === 'PERCENT' ? {'background': 'var(--color-primary-600)', 'color': 'white'} : {}"
-            [class]="cartService.discountType() === 'PERCENT'
-              ? 'px-2 py-1 font-semibold'
-              : 'px-2 py-1 bg-white text-gray-500 hover:bg-gray-100'">%</button>
-          <button (click)="cartService.discountType.set(cartService.discountType() === 'FIXED' ? null : 'FIXED')"
-            [ngStyle]="cartService.discountType() === 'FIXED' ? {'background': 'var(--color-primary-600)', 'color': 'white'} : {}"
-            [class]="cartService.discountType() === 'FIXED'
-              ? 'px-2 py-1 font-semibold border-l'
-              : 'px-2 py-1 bg-white text-gray-500 hover:bg-gray-100 border-l border-gray-200'">Monto</button>
-        </div>
-      </div>
-      @if (cartService.discountType()) {
-      <input type="number" min="0" step="0.01"
-        [placeholder]="cartService.discountType() === 'PERCENT' ? '0 – 100 %' : 'Monto a descontar'"
-        [value]="cartService.discountValue()" (input)="cartService.discountValue.set(+$any($event.target).value)"
-        class="w-full rounded-lg border border-gray-200 px-3 py-1.5 text-sm focus:border-indigo-400 focus:ring-1 focus:ring-indigo-300 bg-white">
-      }
-    </div>
-
-    <!-- Payment Method Selector: Better alignment and less border weight -->
-    <div class="mb-5">
-      <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Método de Pago</p>
-      <div class="grid grid-cols-3 gap-3">
-        <button (click)="paymentMethod.set('CASH')"
-          [class]="paymentMethod() === 'CASH'
-                ? 'flex flex-col items-center gap-1.5 py-3 rounded-xl border border-gray-900 bg-gray-900 text-white shadow-md transition-all'
-                : 'flex flex-col items-center gap-1.5 py-3 rounded-xl border border-gray-100 bg-white text-gray-400 hover:border-gray-200 hover:text-gray-900 transition-all'">
-          <span class="text-base" [class.grayscale-0]="paymentMethod() === 'CASH'" [class.grayscale]="paymentMethod() !== 'CASH'">💵</span>
-          <span class="text-[10px] font-bold uppercase tracking-tight">Efectivo</span>
-        </button>
-        <button (click)="paymentMethod.set('CARD')"
-          [class]="paymentMethod() === 'CARD'
-                ? 'flex flex-col items-center gap-1.5 py-3 rounded-xl border border-[var(--color-primary-500)] bg-[var(--color-primary-50)] text-[var(--color-primary-700)] shadow-sm transition-all'
-                : 'flex flex-col items-center gap-1.5 py-3 rounded-xl border border-gray-100 bg-white text-gray-400 hover:border-gray-200 hover:text-gray-900 transition-all'">
-          <span class="text-base" [class.grayscale-0]="paymentMethod() === 'CARD'" [class.grayscale]="paymentMethod() !== 'CARD'">💳</span>
-          <span class="text-[10px] font-bold uppercase tracking-tight">Tarjeta</span>
-        </button>
-        <button (click)="paymentMethod.set('TRANSFER')"
-          [class]="paymentMethod() === 'TRANSFER'
-                ? 'flex flex-col items-center gap-1.5 py-3 rounded-xl border border-gray-900 bg-gray-900 text-white shadow-md transition-all'
-                : 'flex flex-col items-center gap-1.5 py-3 rounded-xl border border-gray-100 bg-white text-gray-400 hover:border-gray-200 hover:text-gray-900 transition-all'">
-          <span class="text-base" [class.grayscale-0]="paymentMethod() === 'TRANSFER'" [class.grayscale]="paymentMethod() !== 'TRANSFER'">🏦</span>
-          <span class="text-[10px] font-bold uppercase tracking-tight">Transf.</span>
-        </button>
-      </div>
-    </div>
-
-    <!-- Action Buttons -->
-    <div class="grid grid-cols-2 gap-4 mt-8">
+  <!-- Ticket Action Footer (Fixed at bottom) -->
+  <div class="bg-white border-t border-gray-200 p-3 lg:p-4 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] relative z-10 w-full shrink-0">
+    <div class="flex items-center gap-2 lg:gap-3">
+      <!-- Print Button (Icon for mobile, full for desktop) -->
       <button (click)="processDoc(false)" [disabled]="cartService.items().length === 0 || isProcessing()"
-        class="col-span-2 bg-gray-50 text-gray-900 border border-gray-100 font-bold py-3 px-4 flex items-center justify-center rounded-xl hover:bg-gray-100 transition-all disabled:opacity-50">
-        <svg class="w-5 h-5 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        class="bg-gray-50 text-gray-900 border border-gray-100 font-bold py-3.5 px-3 flex items-center justify-center rounded-xl hover:bg-gray-100 transition-all disabled:opacity-50" title="Imprimir Pre-cuenta">
+        <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
             d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z">
           </path>
         </svg>
-        Imprimir Pre-cuenta
+        <span class="hidden lg:inline ml-2 text-sm">Imprimir</span>
       </button>
 
+      <!-- Save Button -->
       <button (click)="processOrder(false)" [disabled]="cartService.items().length === 0 || isProcessing()"
-        class="col-span-1 bg-white text-gray-500 border border-gray-100 font-bold py-4 flex items-center justify-center rounded-xl hover:bg-gray-50 hover:text-gray-900 transition-all disabled:opacity-50 text-xs uppercase tracking-widest">
+        class="flex-1 bg-white text-gray-600 border border-gray-200 font-bold py-3.5 flex items-center justify-center rounded-xl hover:bg-gray-50 hover:text-gray-900 transition-all disabled:opacity-50 text-[10px] lg:text-xs uppercase tracking-widest whitespace-nowrap">
         Guardar
       </button>
 
+      <!-- Charge Button -->
       <button (click)="processDoc(true)" [disabled]="cartService.items().length === 0 || isProcessing()"
-        class="col-span-1 text-white font-black py-4 flex items-center justify-center rounded-xl shadow-lg transition-all hover:opacity-90 active:scale-95 disabled:opacity-50 text-xs uppercase tracking-widest"
+        class="flex-[1.5] text-white font-black py-3.5 flex items-center justify-center rounded-xl shadow-lg transition-all hover:opacity-90 active:scale-95 disabled:opacity-50 text-[10px] lg:text-xs uppercase tracking-widest"
         [style.background]="'var(--color-primary-600)'">
         @if (isProcessing()) {
         <svg class="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
